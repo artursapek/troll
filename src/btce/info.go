@@ -1,0 +1,5 @@
+package btce
+
+func getInfo() {
+  
+}
