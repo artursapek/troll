@@ -1,51 +1,47 @@
 package btce
 
 import (
+  "fmt"
   "net/http"
-  "net/url"
-  "time"
-  "crypto/sha512"
-  "crypto/hmac"
-  "strconv"
-  "encoding/hex"
-  "bytes"
+  "encoding/json"
+  "io/ioutil"
 )
 
-const API_KEY string =    "ES624GXB-98HIGRUB-8LU9HZS5-DLRB1OZ7-N32I2YL3"
-const API_SECRET string = "9b64f25f7659bde648d0685e3283476fc1eac9b26bb94b5dbc1a42f438dd6580"
+const publicApiUrl = "https://btc-e.com/api/2/btc_usd/%s"
 
-func nonce() string {
-  return strconv.FormatInt(int64(time.Now().Unix()), 10)
+type Trade struct {
+  Date   int32
+  Price  float32
+  Amount float32
+  Tid    int32
 }
 
-func hash(params string) string {
-  hash := sha512.New
-  h := hmac.New(hash, []byte(API_SECRET))
-  h.Write([]byte(params))
-  return hex.EncodeToString(h.Sum(nil))
-}
+type Trades []Trade
 
-
-func ApiRequest(action string, params url.Values) *http.Response {
-  client := &http.Client{}
-
-  params.Set("method", action)
-  params.Set("nonce", nonce())
-
-  paramsEncoded := params.Encode()
-  body := bytes.NewBufferString(paramsEncoded)
-  req, _ := http.NewRequest("POST", "https://btc-e.com/tapi", body)
-
-  req.Header.Set("Content-type", "application/x-www-form-urlencoded")
-  req.Header.Set("Key", API_KEY)
-  req.Header.Set("Sign", hash(paramsEncoded))
-
-  response, err := client.Do(req)
+func decodeTrades(input []byte) Trades {
+  var trades Trades
+  err := json.Unmarshal(input, &trades)
   if err != nil {
     panic(err)
-  } else {
-    return response
   }
+  return trades
 }
 
+func PublicApiRequest(action string) []byte {
+  requestUrl := fmt.Sprintf(publicApiUrl, action)
+  res, err := http.Get(requestUrl)
+  if err != nil {
+    panic(err)
+  }
+  body, readErr := ioutil.ReadAll(res.Body)
+  if readErr != nil {
+    panic(err)
+  }
+  return body
+}
+
+func GetTrades() Trades {
+  response := PublicApiRequest("trades")
+  return decodeTrades(response)
+}
 
