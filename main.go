@@ -2,18 +2,17 @@ package main
 
 import (
   "btce"
+  "troll/memory"
   "fmt"
 )
 
 func main () {
-  //res := btce.ApiRequest("TradeHistory", values)
-  //body, _ := ioutil.ReadAll(res.Body)
-  //print(string(body))
   trades := btce.GetTrades()
-  var lastPrice float32 = 0
   for i := 0; i < 150; i ++ {
     p := trades[i].Price
-    fmt.Println(p - lastPrice)
-    lastPrice = p
+    id := trades[i].Tid
+    fmt.Println(fmt.Sprintf("%d,%f", id, p))
   }
+  memory.Append("prices",  "test", "a")
+
 }
