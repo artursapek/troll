@@ -1,1 +1,4 @@
+main
+log/mongo.log
 data/db/*
+nohup.out
