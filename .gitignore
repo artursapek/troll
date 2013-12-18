@@ -1,4 +1,4 @@
 main
-log/mongo.log
+log/*
 data/db/*
 nohup.out
