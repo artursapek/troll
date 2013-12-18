@@ -2,17 +2,26 @@ package main
 
 import (
   "btce"
-  "troll/memory"
   "fmt"
+  "troll/data"
+  "labix.org/v2/mgo/bson"
 )
 
 func main () {
+  c := data.GetCollection("trades")
   trades := btce.GetTrades()
   for i := 0; i < 150; i ++ {
-    p := trades[i].Price
-    id := trades[i].Tid
+    trade := trades[i]
+    p    := trade.Price
+    id   := trade.Tid
     fmt.Println(fmt.Sprintf("%d,%f", id, p))
+    change, err := c.Upsert(bson.M{"tid": id}, &trade)
+    if err != nil {
+      panic(err)
+    }
+    print(change)
   }
-  memory.Append("prices",  "test", "a")
 
+  count, _ := c.Count()
+  print(count)
 }

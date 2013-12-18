@@ -1,0 +1,25 @@
+all output going to: /usr/local/var/log/mongodb/mongo.log
+
+
+***** SERVER RESTARTED *****
+
+
+Tue Dec 17 22:03:10.888 [initandlisten] MongoDB starting : pid=58946 port=27017 dbpath=./data/db 64-bit host=Artur-Sapek.local
+Tue Dec 17 22:03:10.889 [initandlisten] 
+Tue Dec 17 22:03:10.889 [initandlisten] ** WARNING: soft rlimits too low. Number of files is 256, should be at least 1000
+Tue Dec 17 22:03:10.889 [initandlisten] db version v2.4.5
+Tue Dec 17 22:03:10.889 [initandlisten] git version: a2ddc68ba7c9cee17bfe69ed840383ec3506602b
+Tue Dec 17 22:03:10.889 [initandlisten] build info: Darwin bs-osx-106-x86-64-2.10gen.cc 10.8.0 Darwin Kernel Version 10.8.0: Tue Jun  7 16:32:41 PDT 2011; root:xnu-1504.15.3~1/RELEASE_X86_64 x86_64 BOOST_LIB_VERSION=1_49
+Tue Dec 17 22:03:10.889 [initandlisten] allocator: system
+Tue Dec 17 22:03:10.889 [initandlisten] options: { bind_ip: "127.0.0.1", config: "/usr/local/etc/mongod.conf", dbpath: "./data/db", logappend: "true", logpath: "./log/mongo.log" }
+Tue Dec 17 22:03:10.889 [initandlisten] exception in initAndListen: 10310 Unable to lock file: ./data/db/mongod.lock. Is a mongod instance already running?, terminating
+Tue Dec 17 22:03:10.889 dbexit: 
+Tue Dec 17 22:03:10.889 [initandlisten] shutdown: going to close listening sockets...
+Tue Dec 17 22:03:10.889 [initandlisten] shutdown: going to flush diaglog...
+Tue Dec 17 22:03:10.889 [initandlisten] shutdown: going to close sockets...
+Tue Dec 17 22:03:10.889 [initandlisten] shutdown: waiting for fs preallocator...
+Tue Dec 17 22:03:10.889 [initandlisten] shutdown: lock for final commit...
+Tue Dec 17 22:03:10.889 [initandlisten] shutdown: final commit...
+Tue Dec 17 22:03:10.889 [initandlisten] shutdown: closing all files...
+Tue Dec 17 22:03:10.889 [initandlisten] closeAllFiles() finished
+Tue Dec 17 22:03:10.889 dbexit: really exiting now
