@@ -45,3 +45,30 @@ func GetTrades() Trades {
   return decodeTrades(response)
 }
 
+type Ticker struct {
+  High float32
+  Low float32
+  Buy float32
+  Sell float32
+  Server_time int32
+}
+
+
+type TickerUnpack struct {
+  Ticker Ticker
+}
+
+func decodeTicker(input []byte) Ticker {
+  var ticker TickerUnpack
+  err := json.Unmarshal(input, &ticker)
+  if err != nil {
+    panic(err)
+  }
+  return ticker.Ticker
+}
+
+func GetTicker() Ticker {
+  response := PublicApiRequest("ticker")
+  return decodeTicker(response)
+}
+

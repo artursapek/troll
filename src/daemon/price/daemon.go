@@ -3,23 +3,19 @@ package price
 import (
   "btce"
   "data"
-  "labix.org/v2/mgo/bson"
   "time"
   "fmt"
 )
 
+const frequency = 30 // seconds
+
 func perform() {
   fmt.Println("Running...")
-  c := data.GetCollection("trades")
-  trades := btce.GetTrades()
-  for i := 0; i < 150; i ++ {
-    trade := trades[i]
-    tid   := trade.Tid
-    change, err := c.Upsert(bson.M{"tid": tid}, &trade)
-    if err != nil {
-      panic(err)
-    }
-    print(change)
+  ticker := btce.GetTicker()
+  c := data.GetCollection("prices")
+  err := c.Insert(&ticker)
+  if err != nil {
+    panic(err)
   }
 }
 
@@ -28,6 +24,6 @@ func Run() {
   for running {
     perform()
     // Sleep for a minute
-    time.Sleep(60 * 1000 * time.Millisecond)
+    time.Sleep(frequency * 1000 * time.Millisecond)
   }
 }
