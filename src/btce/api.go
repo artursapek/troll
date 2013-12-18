@@ -15,10 +15,7 @@ func PublicApiRequest(action string) []byte {
   if err != nil {
     panic(err)
   }
-  body, readErr := ioutil.ReadAll(res.Body)
-  if readErr != nil {
-    panic(err)
-  }
+  body, _ := ioutil.ReadAll(res.Body)
   return body
 }
 
@@ -62,7 +59,7 @@ func decodeTicker(input []byte) Ticker {
   var ticker TickerUnpack
   err := json.Unmarshal(input, &ticker)
   if err != nil {
-    panic(err)
+    fmt.Println(err)
   }
   return ticker.Ticker
 }
