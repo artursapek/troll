@@ -8,6 +8,8 @@ import (
 
 type PriceDaemon struct {}
 
+func (daemon PriceDaemon) Setup() {}
+
 func (daemon PriceDaemon) Perform() {
   ticker := btce.GetTicker()
   // If ticker isn't empty (meaning there was a decode error)
