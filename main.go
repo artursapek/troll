@@ -1,9 +1,10 @@
 package main
 
 import (
-  priceDaemon "daemon/price"
+  "os"
+  "dispatch"
 )
 
 func main () {
-  priceDaemon.Run()
+  dispatch.Dispatch(os.Args[1])
 }
