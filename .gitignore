@@ -2,3 +2,4 @@ main
 log/*
 data/db/*
 nohup.out
+*.pid
