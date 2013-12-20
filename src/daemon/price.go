@@ -6,13 +6,9 @@ import (
   "fmt"
 )
 
-type PriceDaemon struct {}
-
-func (daemon PriceDaemon) Setup() {}
-
-func (daemon PriceDaemon) Perform() {
+func GetTicker() btce.Ticker {
   ticker := btce.GetTicker()
-  // If ticker isn't empty (meaning there was a decode error)
+  // If ticker is empty there was a decode error
   if ticker != (btce.Ticker{}) {
     c := data.GetCollection("prices")
     err := c.Insert(&ticker)
@@ -24,6 +20,7 @@ func (daemon PriceDaemon) Perform() {
   } else {
     fmt.Println("Ignoring empty ticker")
   }
+  return ticker
 }
 
 

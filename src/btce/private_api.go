@@ -9,6 +9,7 @@ import (
   "crypto/hmac"
   "strconv"
   "encoding/hex"
+  "io/ioutil"
 )
 
 const API_KEY string =    "ES624GXB-98HIGRUB-8LU9HZS5-DLRB1OZ7-N32I2YL3"
@@ -25,7 +26,7 @@ func hash(params string) string {
   return hex.EncodeToString(h.Sum(nil))
 }
 
-func ApiRequest(action string, params url.Values) *http.Response {
+func ApiRequest(action string, params url.Values) []byte {
   client := &http.Client{}
 
   params.Set("method", action)
@@ -40,10 +41,12 @@ func ApiRequest(action string, params url.Values) *http.Response {
   req.Header.Set("Sign", hash(paramsEncoded))
 
   response, err := client.Do(req)
+
   if err != nil {
     panic(err)
   } else {
-    return response
+    body, _ := ioutil.ReadAll(response.Body)
+    return body
   }
 }
 

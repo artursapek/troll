@@ -19,17 +19,17 @@ func PublicApiRequest(action string) []byte {
   return body
 }
 
-type Trade struct {
+type PublicTrade struct {
   Date   int32
   Price  float32
   Amount float32
   Tid    int32
 }
 
-type Trades []Trade
+type PublicTrades []PublicTrade
 
-func decodeTrades(input []byte) Trades {
-  var trades Trades
+func decodePublicTrades(input []byte) PublicTrades {
+  var trades PublicTrades
   err := json.Unmarshal(input, &trades)
   if err != nil {
     panic(err)
@@ -37,9 +37,9 @@ func decodeTrades(input []byte) Trades {
   return trades
 }
 
-func GetTrades() Trades {
+func GetPublicTrades() PublicTrades {
   response := PublicApiRequest("trades")
-  return decodeTrades(response)
+  return decodePublicTrades(response)
 }
 
 type Ticker struct {
@@ -47,6 +47,7 @@ type Ticker struct {
   Low float32
   Buy float32
   Sell float32
+  Price float32
   Server_time int32
 }
 

@@ -1,3 +1,3 @@
 #!/bin/bash
 
-nohup ./main prices > log/main.log &
+nohup ./main prices >> log/main.log &
