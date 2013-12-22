@@ -24,6 +24,8 @@ func filterPastNHours (statuses []Status, n, now int32) (results []Status) {
     if status.ServerTime > start {
       results = append(results, status)
     } else {
+      // They come from Mongo in order, so we can break
+      // as soon as we leave the range we wanted.
       break
     }
   }
@@ -37,8 +39,6 @@ func filterPastNMinutes (statuses []Status, n, now int32) (results []Status) {
     if status.ServerTime > start {
       results = append(results, status)
     } else {
-      // They come from Mongo in order, so we can break
-      // as soon as we leave the range we wanted.
       break
     }
   }

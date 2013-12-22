@@ -46,7 +46,7 @@ func printS(slope float32) {
   if slope < 0 {
     fmt.Printf(fmt.Sprintf("%s-$%.2f ", color, slope * -1))
   } else {
-    fmt.Printf(fmt.Sprintf("%s$%.2f ", color, slope))
+    fmt.Printf(fmt.Sprintf("%s+$%.2f ", color, slope))
   }
 }
 
