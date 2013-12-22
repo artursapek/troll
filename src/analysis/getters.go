@@ -23,6 +23,8 @@ func filterPastNHours (statuses []Status, n, now int32) (results []Status) {
     status := statuses[i]
     if status.ServerTime > start {
       results = append(results, status)
+    } else {
+      break
     }
   }
   return results

@@ -35,4 +35,3 @@ func Analyze(status Status) Status {
   return status
 }
 
-
