@@ -12,7 +12,7 @@ func Dispatch(command string) {
   writePID(command)
   switch command {
   case "run":
-    daemon.Run(daemon.TrollDaemon{}, time.Duration(15))
+    daemon.Run(daemon.TrollDaemon{}, time.Duration(30))
   case "status":
     daemon.Run(daemon.StatusDaemon{}, time.Duration(1))
   case "runsim":
