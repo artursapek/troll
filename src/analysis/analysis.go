@@ -38,9 +38,9 @@ func Analyze(status Status) Status {
   return status
 }
 
-func statusesFromPast7Days (status Status) (statuses []Status) {
-  // 7 days in seconds
-  start := status.ServerTime - (7 * 24 * 60 * 60)
+func statusesFromPastNHours (status Status, n int32) (statuses []Status) {
+  // Go back in time n hours in seconds
+  start := status.ServerTime - (n * 24 * 60 * 60)
   // Find all statuses between the two dates, and unpack them into statuses variable
   query := bson.M{ "servertime": bson.M{ "$gte": start, "$lt": status.ServerTime }}
   err := statusesCollection.Find(query).Sort("-servertime").All(&statuses)
@@ -50,7 +50,7 @@ func statusesFromPast7Days (status Status) (statuses []Status) {
   return statuses
 }
 
-func pastNHours (statuses []Status, n, now int32) (results []Status) {
+func filterPastNHours (statuses []Status, n, now int32) (results []Status) {
   start := now - (n * 60 * 60)
   for i := 0; i < len(statuses); i ++ {
     status := statuses[i]
@@ -67,6 +67,10 @@ func pastNMinutes (statuses []Status, n, now int32) (results []Status) {
     status := statuses[i]
     if status.ServerTime > start {
       results = append(results, status)
+    } else {
+      // They come from Mongo in order, so we can break
+      // as soon as we leave the range we wanted.
+      break
     }
   }
   return results
@@ -92,11 +96,11 @@ func calculateRange(statuses []Status) Range {
 
 func calculateRangeMap(status Status) Ranges {
   r := make(Ranges)
-  statuses := statusesFromPast7Days(status)
+  statuses := statusesFromPastNHours (status, 7 * 24)
   for i := 0; i < 5; i ++ {
     hrs := hourlyMetrics[i]
     hrsString := strconv.Itoa(hrs)
-    r[hrsString] = calculateRange(pastNHours(statuses, int32(hrs), status.ServerTime))
+    r[hrsString] = calculateRange(filterPastNHours(statuses, int32(hrs), status.ServerTime))
   }
   return r
 }
@@ -139,14 +143,14 @@ func calculateVolatility(statuses []Status) (avgDev float32) {
 
 func calculateVolatilityMap(status Status) Metrics {
   metrics := make(Metrics)
-  statuses := statusesFromPast7Days(status)
+  statuses := statusesFromPastNHours (status, 7 * 24)
   if len(statuses) == 0 {
     return metrics
   }
   for i := 0; i < 5; i ++ {
     hrs := hourlyMetrics[i]
     hrsString := strconv.Itoa(hrs)
-    metrics[hrsString] = calculateVolatility(pastNHours(statuses, int32(hrs), status.ServerTime))
+    metrics[hrsString] = calculateVolatility(filterPastNHours(statuses, int32(hrs), status.ServerTime))
   }
   return metrics
 }
@@ -156,14 +160,14 @@ func calculateSlope(statuses []Status) (slope float32) {
     return 0.0
   }
   amt := len(statuses)
-  first := statuses[0]
-  last := statuses[amt - 1]
-  return last.Price - first.Price
+  first := statuses[0]      // Most distant
+  last := statuses[amt - 1] // Most recent
+  return first.Price - last.Price
 }
 
 func calculateSlopeMap(status Status) Metrics {
   metrics := make(Metrics)
-  statuses := statusesFromPast7Days(status)
+  statuses := statusesFromPastNHours (status, 1)
   if len(statuses) == 0 {
     return metrics
   }
@@ -175,13 +179,3 @@ func calculateSlopeMap(status Status) Metrics {
   return metrics
 }
 
-
-
-// Slope
-
-/*
-func calculateSlopeMap(status Status) (r Metrics) {
-  statuses := statusesFromPast7Days(status)
-  return r
-}
-*/
