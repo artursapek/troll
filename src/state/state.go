@@ -6,8 +6,10 @@ import(
 )
 
 type TrollState struct {
-  WaitingTo string // "buy"/"sell"
+  LastTrade btce.Trade
 }
+
+var State TrollState
 
 func GetState() {
   lastTrade := btce.LastTrade()

@@ -1,33 +1,40 @@
 package simulate
 
 import (
-//  "fmt"
   "data"
-  "daemon"
   "btce"
   "state"
 )
 
 // Mongo db holding test data
 const testDB string = "test_prices"
-
 const amtDocs int = 70583
 
-func Iterate() {
-  state.GetState()
 
-  c := data.GetCollection(testDB)
-  var ticker btce.Ticker
-  for skip := 0; skip < 1000; skip ++ {
-    var tickers []btce.Ticker
-    c.Find(nil).Limit(1).Skip(skip).All(&tickers)
-    ticker = tickers[0]
-    //fmt.Printf(".")
-    Run(ticker)
-  }
+var firstTrade = btce.Trade{
+  Pair: "btc_usd",
+  Type: "sell",
+  Amount: 0.5,
+  Rate: 206.0,
+  Order_id: 1,
+  Timestamp: 1381776000,
 }
 
-func Run(ticker btce.Ticker) {
-  daemon.Tick(ticker)
+var testState = state.TrollState{
+  LastTrade: firstTrade,
+}
+
+
+func Iterate() {
+  //state.GetState()
+  skip := 0
+
+  c := data.GetCollection(testDB)
+  var tickers []btce.Ticker
+  c.Find(nil).Skip(skip).All(&tickers)
+
+  for i := 0; i < len(tickers); i ++ {
+    //ticker := tickers[i]
+  }
 }
 

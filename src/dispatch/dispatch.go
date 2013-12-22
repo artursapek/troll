@@ -11,8 +11,8 @@ func Dispatch(command string) {
   killCommand(command)
   writePID(command)
   switch command {
-  case "prices":
-    //daemon.Run(daemon.PriceDaemon{}, time.Duration(15))
+  case "run":
+    daemon.Run(daemon.TrollDaemon{}, time.Duration(15))
   case "status":
     daemon.Run(daemon.StatusDaemon{}, time.Duration(15))
   case "runsim":

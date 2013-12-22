@@ -1,15 +1,25 @@
 package daemon
 
 import (
-//  "fmt"
-  "btce"
+  "fmt"
+  "analysis"
 )
 
 const BUY string = "buy"
 const SELL string = "sell"
 
+type TrollDaemon struct{}
 
-func Tick(ticker btce.Ticker) {
-  //fmt.Println(ticker.Price)
+func (daemon TrollDaemon) Perform() {
+  Update()
+}
+
+func (daemon TrollDaemon) Setup() {
+}
+
+func Update() {
+  status := analysis.RecordMarketStatus()
+  // Act on it! Buy or wait, sell or hold
+  fmt.Println(status)
 }
 
