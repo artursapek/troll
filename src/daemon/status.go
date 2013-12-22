@@ -75,6 +75,7 @@ func printStatus() {
   printS(status.Analysis.Slope["30"])
   printS(status.Analysis.Slope["60"])
 
+  fmt.Printf(CLR_WHITE) // Reset
   fmt.Printf("         \r") // clear old shit
 }
 
