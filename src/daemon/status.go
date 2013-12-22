@@ -43,18 +43,23 @@ func printStatus() {
   price := status.Price
   percentile := status.Analysis.Percentile
 
-  fmt.Printf(fmt.Sprintf("\r%s%d seconds ago ", CLR_GREY, secondsAgo))
+  fmt.Printf(fmt.Sprintf("%s%d seconds ago ", CLR_GREY, secondsAgo))
   fmt.Printf(fmt.Sprintf("%s$%.4f ", CLR_GREEN, price))
 
+  fmt.Printf(fmt.Sprintf("%sPercentile: ", CLR_GREY))
 
   printP(percentile["6"])
   printP(percentile["12"])
   printP(percentile["24"])
 
-  fmt.Printf(fmt.Sprintf(" %s%f", CLR_WHITE, status.Analysis.Slope["5"]))
-  fmt.Printf(fmt.Sprintf(" %s%f", CLR_WHITE, status.Analysis.Slope["10"]))
-  fmt.Printf(fmt.Sprintf(" %s%f", CLR_WHITE, status.Analysis.Slope["30"]))
-  fmt.Printf(fmt.Sprintf(" %s%f", CLR_WHITE, status.Analysis.Slope["60"]))
+  fmt.Printf(fmt.Sprintf("%sSlope: ", CLR_GREY))
+
+  fmt.Printf(fmt.Sprintf("%s%.2f", CLR_WHITE, status.Analysis.Slope["5"]))
+  fmt.Printf(fmt.Sprintf(" %s%.2f", CLR_WHITE, status.Analysis.Slope["10"]))
+  fmt.Printf(fmt.Sprintf(" %s%.2f", CLR_WHITE, status.Analysis.Slope["30"]))
+  fmt.Printf(fmt.Sprintf(" %s%.2f", CLR_WHITE, status.Analysis.Slope["60"]))
+
+  fmt.Printf("         \r") // clear old shit
 }
 
 func (daemon StatusDaemon) Setup() {
