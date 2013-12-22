@@ -38,7 +38,7 @@ func printS(slope float32) {
   var color string
   if slope > -5 && slope < 5 {
     color = CLR_YELLOW
-  } else if slope < -5 {
+  } else if slope <= -5 {
     color = CLR_RED
   } else {
     color = CLR_GREEN
