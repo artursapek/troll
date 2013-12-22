@@ -43,7 +43,7 @@ func statusesFromPast7Days (status Status) (statuses []Status) {
   start := status.ServerTime - (7 * 24 * 60 * 60)
   // Find all statuses between the two dates, and unpack them into statuses variable
   query := bson.M{ "servertime": bson.M{ "$gte": start, "$lt": status.ServerTime }}
-  err := statusesCollection.Find(query).Sort("-time").All(&statuses)
+  err := statusesCollection.Find(query).Sort("-servertime").All(&statuses)
   if err != nil {
     fmt.Println(err) // Log it, and return empty
   }
