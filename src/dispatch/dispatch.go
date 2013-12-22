@@ -14,7 +14,7 @@ func Dispatch(command string) {
   case "run":
     daemon.Run(daemon.TrollDaemon{}, time.Duration(15))
   case "status":
-    daemon.Run(daemon.StatusDaemon{}, time.Duration(15))
+    daemon.Run(daemon.StatusDaemon{}, time.Duration(1))
   case "runsim":
     simulate.Iterate()
   default:

@@ -1,3 +1,4 @@
 #!/bin/bash
 
+ulimit -n 2048
 mongod --dbpath ./data/db --logpath ./log/mongo.log > /dev/null 2>&1

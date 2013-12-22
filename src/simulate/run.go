@@ -1,15 +1,19 @@
 package simulate
 
 import (
+  "fmt"
   "data"
   "btce"
   "state"
+  "analysis"
 )
 
 // Mongo db holding test data
 const testDB string = "test_prices"
 const amtDocs int = 70583
 
+var c = data.GetCollection(testDB)
+var cc = data.GetCollection("test_prices_analyzed")
 
 var firstTrade = btce.Trade{
   Pair: "btc_usd",
@@ -24,17 +28,18 @@ var testState = state.TrollState{
   LastTrade: firstTrade,
 }
 
+var i = 5001;
+var statuses []analysis.Status
+var err = c.Find(nil).All(&statuses)
 
 func Iterate() {
-  //state.GetState()
-  skip := 0
-
-  c := data.GetCollection(testDB)
-  var tickers []btce.Ticker
-  c.Find(nil).Skip(skip).All(&tickers)
-
-  for i := 0; i < len(tickers); i ++ {
-    //ticker := tickers[i]
+  status := statuses[i]
+  status = analysis.Analyze(status)
+  fmt.Println(status)
+  cc.Insert(&status)
+  i += 1
+  if i < 10000 {
+    Iterate()
   }
 }
 

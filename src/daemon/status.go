@@ -2,28 +2,66 @@ package daemon
 
 import (
   "data"
-  "btce"
+  "analysis"
   "fmt"
+  "time"
 )
+
+const CLR_WHITE  = "\x1b[37;1m"
+const CLR_GREY   = "\x1b[30;1m"
+const CLR_GREEN  = "\x1b[32;1m"
+const CLR_YELLOW = "\x1b[33;1m"
+const CLR_RED    = "\x1b[31;1m"
+
+var collectionStatuses = data.GetCollection("statuses")
 
 type StatusDaemon struct{}
 
-func getStatus() string {
-  c := data.GetCollection("prices")
-  var tickers []btce.Ticker
-  c.Find(nil).Limit(1).Sort("-server_time").All(&tickers)
-  lastTicker := tickers[0]
-  time := lastTicker.Server_time
-  buy := lastTicker.Buy
-  sell := lastTicker.Sell
-  return fmt.Sprintf("\r%d  %f  %f", time, buy, sell)
+func now() int32 {
+  return int32(time.Now().Unix())
+}
+
+func printP(percentile float32) {
+  var color string
+  if percentile < 0.33 {
+    color = CLR_RED
+  } else if percentile < 0.66 {
+    color = CLR_YELLOW
+  } else {
+    color = CLR_GREEN
+  }
+  fmt.Printf(fmt.Sprintf("%s%.2f", color, percentile * 100))
+  fmt.Printf("%% ")
+}
+
+func printStatus() {
+  var statuses []analysis.Status
+  collectionStatuses.Find(nil).Limit(1).Sort("-servertime").All(&statuses)
+  status := statuses[0]
+  time := status.LocalTime
+  secondsAgo := now() - time
+  price := status.Price
+  percentile := status.Analysis.Percentile
+
+  fmt.Printf(fmt.Sprintf("\r%s%d seconds ago ", CLR_GREY, secondsAgo))
+  fmt.Printf(fmt.Sprintf("%s$%.4f ", CLR_GREEN, price))
+
+
+  printP(percentile["6"])
+  printP(percentile["12"])
+  printP(percentile["24"])
+
+  fmt.Printf(fmt.Sprintf(" %s%f", CLR_WHITE, status.Analysis.Slope["5"]))
+  fmt.Printf(fmt.Sprintf(" %s%f", CLR_WHITE, status.Analysis.Slope["10"]))
+  fmt.Printf(fmt.Sprintf(" %s%f", CLR_WHITE, status.Analysis.Slope["30"]))
+  fmt.Printf(fmt.Sprintf(" %s%f", CLR_WHITE, status.Analysis.Slope["60"]))
 }
 
 func (daemon StatusDaemon) Setup() {
-  header := "time        buy         sell"
+  header := "Troll"
   fmt.Println(header)
 }
 
 func (daemon StatusDaemon) Perform() {
-  fmt.Printf(getStatus())
+  printStatus()
 }
