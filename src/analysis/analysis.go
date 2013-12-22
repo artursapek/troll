@@ -47,7 +47,6 @@ func statusesFromPast7Days (status Status) (statuses []Status) {
   if err != nil {
     fmt.Println(err) // Log it, and return empty
   }
-  fmt.Println(fmt.Sprintf("Found %d past statuses", len(statuses)))
   return statuses
 }
 
@@ -153,13 +152,13 @@ func calculateVolatilityMap(status Status) Metrics {
 }
 
 func calculateSlope(statuses []Status) (slope float32) {
+  if len(statuses) == 0 {
+    return 0.0
+  }
   amt := len(statuses)
-  amtFloat := float32(amt)
   first := statuses[0]
   last := statuses[amt - 1]
-  fmt.Println(first.Price)
-  fmt.Println(last.Price)
-  return (last.Price - first.Price) / amtFloat
+  return last.Price - first.Price
 }
 
 func calculateSlopeMap(status Status) Metrics {

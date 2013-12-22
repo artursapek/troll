@@ -34,6 +34,22 @@ func printP(percentile float32) {
   fmt.Printf("%% ")
 }
 
+func printS(slope float32) {
+  var color string
+  if slope > -5 && slope < 5 {
+    color = CLR_YELLOW
+  } else if slope < -5 {
+    color = CLR_RED
+  } else {
+    color = CLR_GREEN
+  }
+  if slope < 0 {
+    fmt.Printf(fmt.Sprintf("%s-$%.2f ", color, slope * -1))
+  } else {
+    fmt.Printf(fmt.Sprintf("%s$%.2f ", color, slope))
+  }
+}
+
 func printStatus() {
   var statuses []analysis.Status
   collectionStatuses.Find(nil).Limit(1).Sort("-servertime").All(&statuses)
@@ -54,10 +70,10 @@ func printStatus() {
 
   fmt.Printf(fmt.Sprintf("%sSlope: ", CLR_GREY))
 
-  fmt.Printf(fmt.Sprintf("%s%.2f", CLR_WHITE, status.Analysis.Slope["5"]))
-  fmt.Printf(fmt.Sprintf(" %s%.2f", CLR_WHITE, status.Analysis.Slope["10"]))
-  fmt.Printf(fmt.Sprintf(" %s%.2f", CLR_WHITE, status.Analysis.Slope["30"]))
-  fmt.Printf(fmt.Sprintf(" %s%.2f", CLR_WHITE, status.Analysis.Slope["60"]))
+  printS(status.Analysis.Slope["5"])
+  printS(status.Analysis.Slope["10"])
+  printS(status.Analysis.Slope["30"])
+  printS(status.Analysis.Slope["60"])
 
   fmt.Printf("         \r") // clear old shit
 }
