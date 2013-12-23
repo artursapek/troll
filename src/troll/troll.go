@@ -1,7 +1,6 @@
 package troll
 
 import (
-  "fmt"
   "btce"
   "analysis"
 )
