@@ -4,7 +4,7 @@ import (
   "strconv"
 )
 
-func calculateSlope(statuses []Status) (slope float32) {
+func calculateSlope(statuses []MarketStatus) (slope float32) {
   if len(statuses) == 0 {
     return 0.0
   }
@@ -14,7 +14,7 @@ func calculateSlope(statuses []Status) (slope float32) {
   return first.Price - last.Price
 }
 
-func calculateSlopeMap(status Status) Metrics {
+func calculateSlopeMap(status MarketStatus) Metrics {
   metrics := make(Metrics)
   statuses := statusesFromPastNHours (status, 1)
   if len(statuses) == 0 {

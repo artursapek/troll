@@ -4,9 +4,7 @@ import (
   "strconv"
 )
 
-// Percentile
-
-func calculatePercentileMap(status Status) Metrics {
+func calculatePercentileMap(status MarketStatus) Metrics {
   metrics := make(Metrics)
   for i := 0; i < 5; i ++ {
     hrs := hourlyMetrics[i]
@@ -19,7 +17,7 @@ func calculatePercentileMap(status Status) Metrics {
     }
     metrics[hrsString] = perc
   }
- return metrics
+  return metrics
 }
 
 

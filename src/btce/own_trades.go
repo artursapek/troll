@@ -1,36 +1,41 @@
 package btce
 
 import (
+  "fmt"
   "net/url"
   "encoding/json"
 )
 
-type Trade struct {
+type OwnTrade struct {
   Pair string
   Type string
   Amount float32
   Rate float32
-  Order_id int32
   Timestamp int32
 }
 
+// Unpacking bullshit
 type TradesResponse struct {
-  Success int32
-  Return map[string]Trade
+  Success int
+  Error string
+  Return map[string]OwnTrade
 }
 
-func DecodeTrades(body []byte) TradesResponse {
+func decodeTrades(body []byte) TradesResponse {
   var trades TradesResponse
   json.Unmarshal(body, &trades)
+  if trades.Success != 1 {
+    fmt.Println(trades.Error)
+  }
   return trades
 }
 
-func LastTrade() Trade {
+func LastTradeMade() OwnTrade {
   params := url.Values{}
   params.Set("count", "1")
-  response := ApiRequest("TradeHistory", params)
-  trades := DecodeTrades(response)
-  var firstTrade Trade
+  responseBody := ApiRequest("TradeHistory", params)
+  trades := decodeTrades(responseBody)
+  var firstTrade OwnTrade
   for _, trade := range trades.Return {
     firstTrade = trade
     break

@@ -25,7 +25,7 @@ func GetPublicTrades() PublicTrades {
   return decodePublicTrades(response)
 }
 
-func GetLastTrade() (trade PublicTrade) {
+func GetLastTrade() PublicTrade {
   return GetPublicTrades()[0]
 }
 

@@ -5,7 +5,7 @@ import (
   "labix.org/v2/mgo/bson"
 )
 
-func statusesFromPastNHours (status Status, n int32) (statuses []Status) {
+func statusesFromPastNHours (status MarketStatus, n int32) (statuses []MarketStatus) {
   // Go back in time n hours in seconds
   start := status.ServerTime - (n * 60 * 60)
   // Find all statuses between the two dates, and unpack them into statuses variable
@@ -17,7 +17,7 @@ func statusesFromPastNHours (status Status, n int32) (statuses []Status) {
   return statuses
 }
 
-func filterPastNHours (statuses []Status, n, now int32) (results []Status) {
+func filterPastNHours (statuses []MarketStatus, n, now int32) (results []MarketStatus) {
   start := now - (n * 60 * 60)
   for i := 0; i < len(statuses); i ++ {
     status := statuses[i]
@@ -32,7 +32,7 @@ func filterPastNHours (statuses []Status, n, now int32) (results []Status) {
   return results
 }
 
-func filterPastNMinutes (statuses []Status, n, now int32) (results []Status) {
+func filterPastNMinutes (statuses []MarketStatus, n, now int32) (results []MarketStatus) {
   start := now - (n * 60)
   for i := 0; i < len(statuses); i ++ {
     status := statuses[i]

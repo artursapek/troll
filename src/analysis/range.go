@@ -4,7 +4,7 @@ import (
   "strconv"
 )
 
-func calculateRange(statuses []Status) Range {
+func calculateRange(statuses []MarketStatus) Range {
   min := giantNumber
   max := -giantNumber
 
@@ -19,7 +19,7 @@ func calculateRange(statuses []Status) Range {
   return Range{ Min: min, Max: max }
 }
 
-func calculateRangeMap(status Status) Ranges {
+func calculateRangeMap(status MarketStatus) Ranges {
   r := make(Ranges)
   statuses := statusesFromPastNHours (status, 7 * 24)
   for i := 0; i < 5; i ++ {

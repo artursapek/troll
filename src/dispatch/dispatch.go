@@ -2,7 +2,7 @@ package dispatch
 
 import (
   "fmt"
-  "daemon"
+  "troll"
   "simulate"
   "time"
 )
@@ -12,11 +12,11 @@ func Dispatch(command string) {
   writePID(command)
   switch command {
   case "run":
-    daemon.Run(daemon.TrollDaemon{}, time.Duration(30))
+    troll.Run(troll.Troll{}, time.Duration(30))
   case "status":
-    daemon.Run(daemon.StatusDaemon{}, time.Duration(1))
+    troll.Run(troll.StatusDaemon{}, time.Duration(1))
   case "runsim":
-    simulate.Iterate()
+    simulate.Simulate()
   default:
     panic(fmt.Sprintf("Unknown command: %s", command))
   }

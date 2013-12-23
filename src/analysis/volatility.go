@@ -6,7 +6,7 @@ import (
 
 // Volatility
 
-func calculateVolatility(statuses []Status) (avgDev float32) {
+func calculateVolatility(statuses []MarketStatus) (avgDev float32) {
   amt := len(statuses)
   amtFloat := float32(amt)
   first := statuses[0]
@@ -22,7 +22,7 @@ func calculateVolatility(statuses []Status) (avgDev float32) {
   return avgDev
 }
 
-func calculateVolatilityMap(status Status) Metrics {
+func calculateVolatilityMap(status MarketStatus) Metrics {
   metrics := make(Metrics)
   statuses := statusesFromPastNHours (status, 7 * 24)
   if len(statuses) == 0 {
