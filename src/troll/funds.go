@@ -20,17 +20,3 @@ func GetFundsStatus() (fundsStatus FundsStatus) {
 }
 
 
-
-// "Holding" in this app means holding BTC.
-// "Waiting" means waiting to buy BTC back.
-// The implicit names are just for convenience,
-// and to emphasize the bot's preference
-// for having BTC as opposed to USD.
-
-func (status FundsStatus) Holding() bool {
-  return status.BTC > status.USD
-}
-
-func (status FundsStatus) Waiting() bool {
-  return status.BTC < status.USD
-}

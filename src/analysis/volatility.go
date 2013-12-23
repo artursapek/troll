@@ -8,6 +8,9 @@ import (
 
 func calculateVolatility(statuses []MarketStatus) (avgDev float32) {
   amt := len(statuses)
+  if amt == 0 {
+    return 0
+  }
   amtFloat := float32(amt)
   first := statuses[0]
   last := statuses[amt - 1]

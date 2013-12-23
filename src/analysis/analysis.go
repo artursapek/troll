@@ -1,6 +1,6 @@
 package analysis
 
-import(
+import (
   "data"
 )
 
@@ -9,7 +9,7 @@ const giantNumber float32 = 100000000
 var hourlyMetrics = [5]int{6,12,24,48,72} // Long-term
 var minuteMetrics = [4]int{5,10,30,60}    // Short-term
 
-var statusesCollection = data.GetCollection("test_prices")
+var statusesCollection = data.GetCollection("statuses")
 
 type Range struct {
   Min, Max float32

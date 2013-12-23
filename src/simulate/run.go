@@ -18,8 +18,8 @@ var cc = data.GetCollection("test_prices_analyzed")
 
 // Set up test state
 var funds = troll.FundsStatus{
-  BTC: 0.0,
-  USD: 102.9,
+  BTC: 0.5,
+  USD: 0,
 }
 
 var self = troll.Troll{ 
@@ -28,11 +28,10 @@ var self = troll.Troll{
     Pair: "btc_usd",
     Type: "sell",
     Amount: 0.5,
-    Rate: 206.0,
-    Timestamp: 1381776000,
+    Rate: 206.5,
+    Timestamp: 1385577480,
   },
 }
-
 
 func Simulate() {
   skip, _ := strconv.Atoi(os.Args[2])
@@ -44,7 +43,7 @@ func Simulate() {
   for i := 0; i < limit; i ++ {
     status := statuses[i]
     status = analysis.Analyze(status)
-    self.Decide(status)
+    self = self.Decide(status)
   }
 }
 
