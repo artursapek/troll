@@ -50,25 +50,41 @@ func printS(slope float32) {
   }
 }
 
+func clear() {
+  // Clear the screen
+  fmt.Printf("\033c")
+}
+
+func heading(head string) {
+  fmt.Printf(fmt.Sprintf("\n\n  %s%-12s", CLR_GREY, head))
+}
+
 func printStatus() {
+  clear()
+
+  // Get newest status
   var statuses []analysis.MarketStatus
   collectionStatuses.Find(nil).Limit(1).Sort("-servertime").All(&statuses)
   status := statuses[0]
-  time := status.LocalTime
-  secondsAgo := now() - time
+
+  fmt.Println("")
+
   price := status.Price
+  fmt.Printf(fmt.Sprintf("  %s$%.4f", CLR_GREEN, price))
+
+  lastUpdateTime := status.LocalTime
+  secondsAgo := now() - lastUpdateTime
+  heading(fmt.Sprintf("%ds ago", secondsAgo))
+
   percentile := status.Analysis.Percentile
 
-  fmt.Printf(fmt.Sprintf("%s%d seconds ago ", CLR_GREY, secondsAgo))
-  fmt.Printf(fmt.Sprintf("%s$%.4f ", CLR_GREEN, price))
-
-  fmt.Printf(fmt.Sprintf("%sPercentile: ", CLR_GREY))
+  heading("Percentile")
 
   printP(percentile["6"])
   printP(percentile["12"])
   printP(percentile["24"])
 
-  fmt.Printf(fmt.Sprintf("%sSlope: ", CLR_GREY))
+  heading("Slope")
 
   printS(status.Analysis.Slope["5"])
   printS(status.Analysis.Slope["10"])
@@ -76,7 +92,7 @@ func printStatus() {
   printS(status.Analysis.Slope["60"])
 
   fmt.Printf(CLR_WHITE) // Reset
-  fmt.Printf("         \r") // clear old shit
+  fmt.Println("") // clear old shit
 }
 
 func (troll StatusDaemon) Setup() {
@@ -84,6 +100,7 @@ func (troll StatusDaemon) Setup() {
   fmt.Println(header)
 }
 
-func (troll StatusDaemon) Perform() {
+func (troll StatusDaemon) Perform() time.Duration {
   printStatus()
+  return 1 // Never change the interval from 1 second
 }

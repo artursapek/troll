@@ -5,18 +5,7 @@ func (slope Metrics) IsUpwards() bool {
   return slope["5"] > 0 && slope["10"] > 0
 }
 
-func (status MarketStatus) SlopeIsSevere() bool {
-  // Hard-code this for now. Dont know how else to do it.
-  slope := status.Analysis.Slope
-  threshold := status.Price / 20
-  if slope.IsUpwards() {
-    return (slope["5"] > threshold)
-  } else {
-    return (slope["5"] < -threshold)
-  }
-}
-
-func (slope Metrics) IsAccelerating() bool {
+func (slope Metrics) Accelerating() bool {
   // In whichever direction it's going
   if slope.IsUpwards() {
     return slope["5"]  > slope["10"] &&
@@ -38,7 +27,7 @@ func (slope Metrics) IsAccelerating() bool {
 }
 
 func (slope Metrics) HasSettled() bool {
-  // Compare relatively. Not exactly the opposite of IsAccelerating
+  // Compare relatively. Not exactly the opposite of Accelerating
   if slope.IsUpwards() {
     return slope["5"]  < (slope["10"] / 1.5) &&
            slope["10"] < (slope["30"] / 1.5)
@@ -57,3 +46,5 @@ func (slope Metrics) HasSettled() bool {
    *
    */
 }
+
+

@@ -1,6 +1,7 @@
 package simulate
 
 import (
+  "fmt"
   "os"
   "data"
   "btce"
@@ -13,13 +14,12 @@ import (
 const testDB string = "test_prices"
 const amtDocs int = 70583
 
-var testCollection = data.GetCollection(testDB)
-var cc = data.GetCollection("test_prices_analyzed")
+var testCollection = data.GetStatusCollection()
 
 // Set up test state
 var funds = troll.FundsStatus{
-  BTC: 0.5,
-  USD: 0,
+  BTC: 0.0,
+  USD: 103.25,
 }
 
 var self = troll.Troll{ 
@@ -34,8 +34,16 @@ var self = troll.Troll{
 }
 
 func Simulate() {
-  skip, _ := strconv.Atoi(os.Args[2])
-  limit, _ := strconv.Atoi(os.Args[3])
+  var skip, limit int
+  if len(os.Args) < 3 {
+    skip = 0
+    limit = 10000
+  } else {
+    skip, _ = strconv.Atoi(os.Args[2])
+    limit, _ = strconv.Atoi(os.Args[3])
+  }
+
+  fmt.Println(self.Funds)
 
   var statuses []analysis.MarketStatus
   testCollection.Find(nil).Skip(skip).Limit(limit).All(&statuses)

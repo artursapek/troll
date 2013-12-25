@@ -22,7 +22,7 @@ func (troll Troll) Sell(status analysis.MarketStatus) Troll {
   troll.Funds.USD = usd
   troll.LastTrade = newTrade
 
-  fmt.Println(fmt.Sprintf("Troll sold at %f. USD bal: %f        ", status.Price, usd))
+  fmt.Println(fmt.Sprintf("\nTroll sold at %f. USD bal: %f        ", status.Price, usd))
   return troll
 }
 
@@ -42,6 +42,6 @@ func (troll Troll) Buy(status analysis.MarketStatus) Troll {
   troll.Funds.USD = 0
   troll.LastTrade = newTrade
 
-  fmt.Println(fmt.Sprintf("Troll bought at %f. BTC bal: %f        ", status.Price, btc))
+  fmt.Println(fmt.Sprintf("\nTroll bought at %f. BTC bal: %f        ", status.Price, btc))
   return troll
 }

@@ -1,6 +1,7 @@
 package troll
 
 import (
+  "fmt"
   "analysis"
 )
 
@@ -10,6 +11,7 @@ const NervousnessThreshold = 14
 // Troll is great at decision making
 
 func (troll Troll) Decide(status analysis.MarketStatus) Troll {
+  fmt.Printf(".")
   if troll.Holding() {
     return troll.DecideWhenHolding(status)
   } else {
@@ -18,28 +20,24 @@ func (troll Troll) Decide(status analysis.MarketStatus) Troll {
 }
 
 func (troll Troll) DecideWhenHolding(status analysis.MarketStatus) Troll {
-  potentialMargin := troll.PotentialMargin(status)
+  thresholdProfit := troll.SellThreshold(status)
+  potentialProfit := troll.PotentialProfit(status)
 
-  threshRange := status.Analysis.Range["12"]
-  // Relative threshold based on recent trade history
-  thresholdMargin := ((threshRange.Max - threshRange.Min) / troll.LastTrade.Rate) / float32(2)
-
-  if status.SlopeIsSevere() {
+  if status.Analysis.Slope.Accelerating() {
     //fmt.Println(//fmt.Sprintf("Too severe: %f     ", status.Analysis.Slope["5"]))
     return troll
   }
 
   if status.Analysis.Percentile["all"] > 0.995 {
-    // Never trade while the trend is severe.
-    // Wait until it settles somewhat.
+    // Hold on if by some miracle the value is at an all-time high
     //fmt.Println("Too valuable")
     return troll
   }
 
-  if potentialMargin > thresholdMargin {
+  if potentialProfit >= thresholdProfit {
     if status.Analysis.Percentile["6"] < 0.2 {
 
-      if !status.Analysis.Slope.IsAccelerating() {
+      if !status.Analysis.Slope.Accelerating() {
         //fmt.Println("Sell b/c good margin, low percentile, has settled")
         return troll.Sell(status)
       } else {
@@ -56,14 +54,10 @@ func (troll Troll) DecideWhenHolding(status analysis.MarketStatus) Troll {
 
 
 func (troll Troll) DecideWhenWaiting(status analysis.MarketStatus) Troll {
-  potentialMargin := troll.PotentialMargin(status)
+  thresholdProfit := troll.BuyThreshold(status)
+  potentialProfit := troll.PotentialProfit(status)
 
-  threshRange := status.Analysis.Range["12"]
-  thresholdMargin := ((threshRange.Max - threshRange.Min) / troll.LastTrade.Rate) / float32(2.5)
-
-  ////fmt.Println(potentialProfit)
-
-  if status.SlopeIsSevere() {
+  if status.Analysis.Slope.Accelerating() {
     // Never trade while the trend is severe.
     // Wait until it settles somewhat.
     //fmt.Println(//fmt.Sprintf("Too severe: %f", status.Analysis.Slope["5"]))
@@ -72,8 +66,7 @@ func (troll Troll) DecideWhenWaiting(status analysis.MarketStatus) Troll {
   ////fmt.Println(threshold)
 
   if status.Analysis.Percentile["all"] > 0.995 && troll.WaitingForTooLong(status) {
-
-    if potentialMargin > -0.05 {
+    if (potentialProfit / troll.LastTrade.Rate) > -0.05 {
       ////fmt.Println("RECORD HIGH AND LOW LOSSES. BUYING OMG")
       // BUY
       //fmt.Println("Record high, buying")
@@ -83,12 +76,12 @@ func (troll Troll) DecideWhenWaiting(status analysis.MarketStatus) Troll {
 
     if troll.WaitingForTooLong(status) {
       // Get hasty after a while. Want to be holding.
-      thresholdMargin *= float32(0.5)
+      thresholdProfit /= 2
     }
 
-    if potentialMargin > thresholdMargin {
+    if potentialProfit >= thresholdProfit {
 
-      if !status.Analysis.Slope.IsAccelerating() {
+      if !status.Analysis.Slope.Accelerating() {
         //fmt.Println("Buying b/c of good margin and it has settled")
         return troll.Buy(status)
       } else {
@@ -100,31 +93,6 @@ func (troll Troll) DecideWhenWaiting(status analysis.MarketStatus) Troll {
   }
 
   return troll
-}
-
-// "Holding" means holding BTC.
-// "Waiting" means waiting to buy BTC back.
-// The implicit names are just for convenience,
-// and to emphasize troll's preference
-// for having BTC as opposed to USD.
-
-func (troll Troll) Holding() bool {
-  return troll.Funds.BTC > troll.Funds.USD
-}
-
-func (troll Troll) Waiting() bool {
-  return troll.Funds.BTC < troll.Funds.USD
-}
-
-func (troll Troll) PotentialMargin(status analysis.MarketStatus) float32 {
-  var diff float32
-  lastRate := troll.LastTrade.Rate
-  if troll.Holding() {
-    diff = status.Price - lastRate
-  } else {
-    diff = lastRate - status.Price
-  }
-  return diff / lastRate
 }
 
 func (troll Troll) TimeWaiting(status analysis.MarketStatus) int32 {

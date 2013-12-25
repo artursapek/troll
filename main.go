@@ -5,6 +5,7 @@ import (
   "dispatch"
 )
 
-func main () {
+func main() {
   dispatch.Dispatch(os.Args[1])
 }
+

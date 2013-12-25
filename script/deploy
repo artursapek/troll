@@ -1,0 +1,1 @@
+ssh root@66.228.45.178 "cd ~/troll; script/pull"

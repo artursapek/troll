@@ -5,15 +5,16 @@ import (
 )
 
 type Daemon interface {
-  Perform()
+  Perform() time.Duration
   Setup()
 }
 
-func Run (troll Daemon, frequency time.Duration) {
+func Run (daemon Daemon, frequency time.Duration) {
   running := true
-  troll.Setup()
+  daemon.Setup()
   for running {
-    troll.Perform()
+    // A daemon can modify its own frequency via return value
+    frequency = daemon.Perform()
     time.Sleep(frequency * 1000 * time.Millisecond)
   }
 }
