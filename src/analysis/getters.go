@@ -8,7 +8,7 @@ import (
 func statusesFromPastNHours (status MarketStatus, n int32) (statuses []MarketStatus) {
   // Go back in time n hours in seconds
   start := status.ServerTime - (n * 60 * 60)
-  // Find all statuses between the two dates, and unpack them into statuses variable
+  // Find all statuses between the two dates, excluding the given status
   query := bson.M{ "servertime": bson.M{ "$gte": start, "$lt": status.ServerTime }}
   err := statusesCollection.Find(query).Sort("-servertime").All(&statuses)
   if err != nil {

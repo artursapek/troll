@@ -76,10 +76,21 @@ func printStatus() {
   secondsAgo := now() - lastUpdateTime
   heading(fmt.Sprintf("%ds ago", secondsAgo))
 
-  percentile := status.Analysis.Percentile
+  heading("EMA")
+  fmt.Printf(fmt.Sprintf("%s$%.4f", CLR_GREEN, status.Analysis.EMA))
+
+  emaDiffPercentage := ((status.Price - status.Analysis.EMA) / status.Price) * 100
+
+  if emaDiffPercentage < 0 {
+    fmt.Printf(" %s(%.4f", CLR_RED, emaDiffPercentage)
+  } else {
+    fmt.Printf(fmt.Sprintf(" %s(%.4f", CLR_GREEN, emaDiffPercentage))
+  }
+  fmt.Printf("%%)")
 
   heading("Percentile")
 
+  percentile := status.Analysis.Percentile
   printP(percentile["6"])
   printP(percentile["12"])
   printP(percentile["24"])

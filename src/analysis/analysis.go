@@ -24,6 +24,7 @@ type Analysis struct {
   Percentile Metrics // Posn of current price within range; long term
   Slope      Metrics // Overall price trend per hour; short term
   Volatility Metrics // Average deviation from slope; long term
+  EMA        float32 // Exponential moving average
 }
 
 func Analyze(status MarketStatus) MarketStatus {
@@ -32,6 +33,7 @@ func Analyze(status MarketStatus) MarketStatus {
   status.Analysis.Percentile = calculatePercentileMap(status)
   status.Analysis.Volatility = calculateVolatilityMap(status, pastThreeHours)
   status.Analysis.Slope      = calculateSlopeMap(status, pastThreeHours)
+  status.Analysis.EMA        = calculateEMA(status, pastThreeHours)
   return status
 }
 
