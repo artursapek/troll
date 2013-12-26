@@ -25,9 +25,8 @@ func calculateVolatility(statuses []MarketStatus) (avgDev float32) {
   return avgDev
 }
 
-func calculateVolatilityMap(status MarketStatus) Metrics {
+func calculateVolatilityMap(status MarketStatus, statuses []MarketStatus) Metrics {
   metrics := make(Metrics)
-  statuses := statusesFromPastNHours (status, 7 * 24)
   if len(statuses) == 0 {
     return metrics
   }

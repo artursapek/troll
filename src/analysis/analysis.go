@@ -27,9 +27,10 @@ type Analysis struct {
 }
 
 func Analyze(status MarketStatus) MarketStatus {
-  status.Analysis.Range      = calculateRangeMap(status)
+  pastThreeHours := statusesFromPastNHours(status, 3 * 24)
+  status.Analysis.Range      = calculateRangeMap(status, pastThreeHours)
   status.Analysis.Percentile = calculatePercentileMap(status)
-  status.Analysis.Volatility = calculateVolatilityMap(status)
+  status.Analysis.Volatility = calculateVolatilityMap(status, pastThreeHours)
   status.Analysis.Slope      = calculateSlopeMap(status)
   return status
 }

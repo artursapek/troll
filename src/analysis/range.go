@@ -19,9 +19,9 @@ func calculateRange(statuses []MarketStatus) Range {
   return Range{ Min: min, Max: max }
 }
 
-func calculateRangeMap(status MarketStatus) Ranges {
+func calculateRangeMap(status MarketStatus, statuses []MarketStatus) Ranges {
   r := make(Ranges)
-  statuses := statusesFromPastNHours (status, 7 * 24)
+
   for i := 0; i < 5; i ++ {
     hrs := hourlyMetrics[i]
     hrsString := strconv.Itoa(hrs)

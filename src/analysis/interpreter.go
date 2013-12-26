@@ -5,6 +5,12 @@ func (slope Metrics) IsUpwards() bool {
   return slope["5"] > 0 && slope["10"] > 0
 }
 
+func (slope Metrics) Flat() bool {
+  // Only last ten minutes really matter
+  return (slope["10"] < 3 && slope["10"] > -3) &&
+         (slope["30"] < 4 && slope["30"] > -4)
+}
+
 func (slope Metrics) Accelerating() bool {
   // In whichever direction it's going
   if slope.IsUpwards() {

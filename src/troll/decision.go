@@ -28,6 +28,10 @@ func (troll Troll) DecideWhenHolding(status analysis.MarketStatus) Troll {
     return troll
   }
 
+  if !status.Analysis.Slope.Flat() {
+    return troll
+  }
+
   if status.Analysis.Percentile["all"] > 0.995 {
     // Hold on if by some miracle the value is at an all-time high
     //fmt.Println("Too valuable")
