@@ -32,7 +32,7 @@ func (troll Troll) Perform() time.Duration {
     // Check more often when something is happening
     return time.Duration(15)
   } else {
-    return time.Duration(30)
+    return time.Duration(15)
   }
 }
 

@@ -22,7 +22,7 @@ func Dispatch(command string) {
     // PRODUCTION
     switch command {
     case "run":
-      troll.Run(troll.Troll{}, time.Duration(30))
+      troll.Run(troll.Troll{}, time.Duration(15))
     case "status":
       troll.Run(troll.StatusDaemon{}, time.Duration(1))
     default:
