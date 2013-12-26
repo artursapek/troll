@@ -7,8 +7,7 @@ func (slope Metrics) IsUpwards() bool {
 
 func (slope Metrics) Flat() bool {
   // Only last ten minutes really matter
-  return (slope["10"] < 3 && slope["10"] > -3) &&
-         (slope["30"] < 4 && slope["30"] > -4)
+  return (slope["10"] < 3 && slope["10"] > -3)
 }
 
 func (slope Metrics) Accelerating() bool {

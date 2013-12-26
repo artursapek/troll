@@ -37,14 +37,14 @@ func (troll Troll) Waiting() bool {
 func (troll Troll) SellThreshold(status analysis.MarketStatus) float32 {
   r := status.Analysis.Range["12"]
   d := r.Max - r.Min
-  return d / 3
+  return d / 2
 }
 
 func (troll Troll) BuyThreshold(status analysis.MarketStatus) float32 {
   r := status.Analysis.Range["12"]
   d := r.Max - r.Min
   // Lower threshold for buying back in
-  return d / 3.5
+  return d / 5
 }
 
 func (troll Troll) PotentialProfit(status analysis.MarketStatus) float32 {

@@ -31,7 +31,7 @@ func Analyze(status MarketStatus) MarketStatus {
   status.Analysis.Range      = calculateRangeMap(status, pastThreeHours)
   status.Analysis.Percentile = calculatePercentileMap(status)
   status.Analysis.Volatility = calculateVolatilityMap(status, pastThreeHours)
-  status.Analysis.Slope      = calculateSlopeMap(status)
+  status.Analysis.Slope      = calculateSlopeMap(status, pastThreeHours)
   return status
 }
 
