@@ -21,35 +21,6 @@ func now() int32 {
   return int32(time.Now().Unix())
 }
 
-func printP(percentile float32) {
-  var color string
-  if percentile < 0.33 {
-    color = CLR_RED
-  } else if percentile < 0.66 {
-    color = CLR_YELLOW
-  } else {
-    color = CLR_GREEN
-  }
-  fmt.Printf(fmt.Sprintf("%s%.2f", color, percentile * 100))
-  fmt.Printf("%% ")
-}
-
-func printS(slope float32) {
-  var color string
-  if slope > -5 && slope < 5 {
-    color = CLR_YELLOW
-  } else if slope <= -5 {
-    color = CLR_RED
-  } else {
-    color = CLR_GREEN
-  }
-  if slope < 0 {
-    fmt.Printf(fmt.Sprintf("%s-$%.2f ", color, slope * -1))
-  } else {
-    fmt.Printf(fmt.Sprintf("%s+$%.2f ", color, slope))
-  }
-}
-
 func clear() {
   // Clear the screen
   fmt.Printf("\033c")
@@ -75,32 +46,6 @@ func printStatus() {
   lastUpdateTime := status.LocalTime
   secondsAgo := now() - lastUpdateTime
   heading(fmt.Sprintf("%ds ago", secondsAgo))
-
-  heading("EMA")
-  fmt.Printf(fmt.Sprintf("%s$%.4f", CLR_GREEN, status.Analysis.EMA))
-
-  emaDiffPercentage := ((status.Price - status.Analysis.EMA) / status.Price) * 100
-
-  if emaDiffPercentage < 0 {
-    fmt.Printf(" %s(%.4f", CLR_RED, emaDiffPercentage)
-  } else {
-    fmt.Printf(fmt.Sprintf(" %s(%.4f", CLR_GREEN, emaDiffPercentage))
-  }
-  fmt.Printf("%%)")
-
-  heading("Percentile")
-
-  percentile := status.Analysis.Percentile
-  printP(percentile["6"])
-  printP(percentile["12"])
-  printP(percentile["24"])
-
-  heading("Slope")
-
-  printS(status.Analysis.Slope["5"])
-  printS(status.Analysis.Slope["10"])
-  printS(status.Analysis.Slope["30"])
-  printS(status.Analysis.Slope["60"])
 
   fmt.Printf(CLR_WHITE) // Reset
   fmt.Println("") // clear old shit

@@ -27,13 +27,8 @@ func (troll Troll) Setup() {}
 func (troll Troll) Perform() time.Duration {
   // Record the current market price and analyze it
   status := analysis.RecordMarketStatus()
-  //troll.Decide(status)
-  if troll.Excited(status) {
-    // Check more often when something is happening
-    return time.Duration(15)
-  } else {
-    return time.Duration(15)
-  }
+  troll.Decide(status)
+  return time.Duration(15)
 }
 
 

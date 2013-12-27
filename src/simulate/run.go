@@ -10,24 +10,20 @@ import (
   "strconv"
 )
 
-// Mongo db holding test data
-const testDB string = "test_prices"
-const amtDocs int = 70583
-
 var testCollection = data.GetStatusCollection()
 
 // Start at any point in the simulation
 func MakeTrollFromStatus(status analysis.MarketStatus) troll.Troll {
   funds := troll.FundsStatus{
-    BTC: 0.0,
-    USD: status.Price / 2,
+    BTC: 1.0,
+    USD: 0,
   }
   return troll.Troll{ 
     Funds: funds,
     LastTrade: btce.OwnTrade{
       Pair: "btc_usd",
-      Type: "sell",
-      Amount: 0.5,
+      Type: "buy",
+      Amount: 1.0,
       Rate: status.Price,
       Timestamp: status.ServerTime,
     },

@@ -6,6 +6,7 @@ import (
   "analysis"
 )
 
+
 func (troll Troll) Sell(status analysis.MarketStatus) Troll {
   rate := status.Price - 0.5 // Go 50 cents in to ensure trade is snatched up
   usd := troll.Funds.BTC * rate
@@ -25,7 +26,7 @@ func (troll Troll) Sell(status analysis.MarketStatus) Troll {
   troll.LastTrade = newTrade
 
   fmt.Println("")
-  fmt.Println(fmt.Sprintf("\nTroll sold at %f. USD bal: %f        ", status.Price, usd))
+  fmt.Println(fmt.Sprintf("\n%sTroll SELL @ %f. USD bal: %f", CLR_WHITE, status.Price, usd))
   fmt.Println("")
   return troll
 }
@@ -49,7 +50,7 @@ func (troll Troll) Buy(status analysis.MarketStatus) Troll {
   troll.LastTrade = newTrade
 
   fmt.Println("")
-  fmt.Println(fmt.Sprintf("\nTroll bought at %f. BTC bal: %f        ", status.Price, btc))
+  fmt.Println(fmt.Sprintf("\n%sTroll BUY @ %f. BTC bal: %f", CLR_WHITE, status.Price, btc))
   fmt.Println("")
   return troll
 }
