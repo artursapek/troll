@@ -5,15 +5,13 @@ import (
   "os"
   "data"
   "btce"
-  "analysis"
+  "market"
   "troll"
   "strconv"
 )
 
-var testCollection = data.GetStatusCollection()
-
 // Start at any point in the simulation
-func MakeTrollFromStatus(status analysis.MarketStatus) troll.Troll {
+func MakeTrollFromStatus(status market.MarketPrice) troll.Troll {
   funds := troll.FundsStatus{
     BTC: 1.0,
     USD: 0,
@@ -25,7 +23,7 @@ func MakeTrollFromStatus(status analysis.MarketStatus) troll.Troll {
       Type: "buy",
       Amount: 1.0,
       Rate: status.Price,
-      Timestamp: status.ServerTime,
+      Timestamp: status.Time.Server,
     },
   }
 
@@ -41,17 +39,18 @@ func Simulate() {
     limit, _ = strconv.Atoi(os.Args[3])
   }
 
-  var statuses []analysis.MarketStatus
-  testCollection.Find(nil).Skip(skip).Limit(limit).All(&statuses)
+  var statuses []market.MarketPrice
+  data.Prices.Find(nil).Skip(skip).Limit(limit).All(&statuses)
 
   self := MakeTrollFromStatus(statuses[0])
 
   fmt.Println(self.Funds)
-
+  /*
   for i := 0; i < limit; i ++ {
     status := statuses[i]
-    status = analysis.Analyze(status)
+    status = market.Analyze(status)
     self = self.Decide(status)
   }
+  */
 }
 

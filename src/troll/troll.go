@@ -2,7 +2,7 @@ package troll
 
 import (
   "btce"
-  "analysis"
+//  "market"
   "time"
 )
 
@@ -26,8 +26,8 @@ func (troll Troll) Setup() {}
 
 func (troll Troll) Perform() time.Duration {
   // Record the current market price and analyze it
-  status := analysis.RecordMarketStatus()
-  troll.Decide(status)
+  //status := market.RecordPrice()
+  //troll.Decide(status)
   return time.Duration(15)
 }
 

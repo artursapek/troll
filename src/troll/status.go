@@ -2,7 +2,7 @@ package troll
 
 import (
   "data"
-  "analysis"
+  "market"
   "fmt"
   "time"
 )
@@ -12,8 +12,6 @@ const CLR_GREY   = "\x1b[30;1m"
 const CLR_GREEN  = "\x1b[32;1m"
 const CLR_YELLOW = "\x1b[33;1m"
 const CLR_RED    = "\x1b[31;1m"
-
-var collectionStatuses = data.GetCollection("statuses")
 
 type StatusDaemon struct{}
 
@@ -34,16 +32,16 @@ func printStatus() {
   clear()
 
   // Get newest status
-  var statuses []analysis.MarketStatus
-  collectionStatuses.Find(nil).Limit(1).Sort("-servertime").All(&statuses)
-  status := statuses[0]
+  var prices []market.MarketPrice
+  data.Prices.Find(nil).Limit(1).Sort("-servertime").All(&prices)
+  status := prices[0]
 
   fmt.Println("")
 
   price := status.Price
   fmt.Printf(fmt.Sprintf("  %s$%.4f", CLR_GREEN, price))
 
-  lastUpdateTime := status.LocalTime
+  lastUpdateTime := status.Time.Local
   secondsAgo := now() - lastUpdateTime
   heading(fmt.Sprintf("%ds ago", secondsAgo))
 

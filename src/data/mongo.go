@@ -8,9 +8,12 @@ import (
 const mongoUrl = "127.0.0.1"
 const mongoDBName = "troll"
 
-var mongoSession = NewSession()
+var mongoSession = newSession()
 
-func NewSession() *mgo.Session {
+var Prices    *mgo.Collection
+var Intervals *mgo.Collection
+
+func newSession() *mgo.Session {
   session, err := mgo.Dial(mongoUrl)
   if err != nil {
     panic(err)
@@ -18,15 +21,35 @@ func NewSession() *mgo.Session {
   return session
 }
 
-func GetStatusCollection() *mgo.Collection {
-  if env.Env == "production" {
-    return mongoSession.DB(mongoDBName).C("statuses")
-  } else if env.Env == "simulation" {
-    return mongoSession.DB(mongoDBName).C("test_prices")
+func getPricesCollection() *mgo.Collection {
+  // Frequent price check (15-30s)
+  switch env.Env {
+  case env.PRODUCTION:
+    return getCollection("prices")
+  case env.SIMULATION:
+    return getCollection("test_prices")
   }
   return nil
 }
 
-func GetCollection(collection string) *mgo.Collection {
+func getIntervalsCollection() *mgo.Collection {
+  // Candlestick and Ichimoku lines (2hr)
+  switch env.Env {
+  case env.PRODUCTION:
+    return getCollection("intervals")
+  case env.SIMULATION:
+    return getCollection("test_intervals")
+  }
+  return nil
+}
+
+func getCollection(collection string) *mgo.Collection {
   return mongoSession.DB(mongoDBName).C(collection)
 }
+
+func init() {
+  // Memoize collections
+  Prices =    getPricesCollection()
+  Intervals = getIntervalsCollection()
+}
+
