@@ -1,7 +1,6 @@
 package market
 
 import (
-  "fmt"
   "time"
   "data"
   "ichimoku"
@@ -21,8 +20,6 @@ type MarketInterval struct {
 func RecordInterval(openTime int64) (interval MarketInterval) {
   closeTime := openTime + INTERVAL_PERIOD
   prices := getPricesBetween(openTime, closeTime)
-
-  fmt.Println(len(prices))
 
   interval.Time.Open = openTime
   interval.Time.Close = closeTime

@@ -31,7 +31,7 @@ func MakeTrollFromStatus(status market.MarketPrice) troll.Troll {
 
 func init() {
   // Clear the intervals, which we're generating ourselves.
-  //data.Intervals.DropCollection()
+  data.Intervals.DropCollection()
 }
 
 func Simulate() {
@@ -49,17 +49,14 @@ func Simulate() {
 
   amt := len(prices)
 
-  self := MakeTrollFromStatus(prices[0])
-
-  fmt.Println(self.Funds)
+  //self := MakeTrollFromStatus(prices[0])
 
   for i := 0; i < amt; i ++ {
     price := prices[i]
     //now := price.Time.Local
 
     market.ProcessPrice(price)
-
-    fmt.Println(price.Price)
+    fmt.Printf(".")
   }
 }
 

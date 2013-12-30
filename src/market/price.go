@@ -71,6 +71,7 @@ func ProcessPrice(price MarketPrice) {
     // If it's been at least two hours since the last interval,
     // let's record the newest.
     RecordInterval(lastClose)
+    fmt.Printf("0")
   }
 }
 
