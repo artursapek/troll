@@ -9,7 +9,7 @@ type Ticker struct {
   Buy float32
   Sell float32
   Price float32
-  Server_time int32
+  Server_time int64
 }
 
 // The JSON from their api returns { ticker: { ... everything }}

@@ -15,8 +15,8 @@ const CLR_RED    = "\x1b[31;1m"
 
 type StatusDaemon struct{}
 
-func now() int32 {
-  return int32(time.Now().Unix())
+func now() int64 {
+  return int64(time.Now().Unix())
 }
 
 func clear() {

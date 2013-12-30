@@ -29,28 +29,36 @@ func MakeTrollFromStatus(status market.MarketPrice) troll.Troll {
 
 }
 
+func init() {
+  // Clear the intervals, which we're generating ourselves.
+  //data.Intervals.DropCollection()
+}
+
 func Simulate() {
   var skip, limit int
   if len(os.Args) < 3 {
     skip = 0
-    limit = 10000
+    limit = 999999999999
   } else {
     skip, _ = strconv.Atoi(os.Args[2])
     limit, _ = strconv.Atoi(os.Args[3])
   }
 
-  var statuses []market.MarketPrice
-  data.Prices.Find(nil).Skip(skip).Limit(limit).All(&statuses)
+  var prices []market.MarketPrice
+  data.Prices.Find(nil).Skip(skip).Limit(limit).All(&prices)
 
-  self := MakeTrollFromStatus(statuses[0])
+  amt := len(prices)
+
+  self := MakeTrollFromStatus(prices[0])
 
   fmt.Println(self.Funds)
-  /*
-  for i := 0; i < limit; i ++ {
-    status := statuses[i]
-    status = market.Analyze(status)
-    self = self.Decide(status)
+
+  for i := 0; i < amt; i ++ {
+    price := prices[i]
+    now := price.Time.Local
+
+    fmt.Println(market.NewIntervalHasClosed(now))
+    fmt.Println(price.Price)
   }
-  */
 }
 

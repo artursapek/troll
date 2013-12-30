@@ -5,7 +5,7 @@ import (
 )
 
 type PublicTrade struct {
-  Date   int32
+  Date   int64
   Price  float32
 }
 

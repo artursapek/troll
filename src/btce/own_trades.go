@@ -11,7 +11,7 @@ type OwnTrade struct {
   Type string
   Amount float32
   Rate float32
-  Timestamp int32
+  Timestamp int64
 }
 
 // Unpacking bullshit
