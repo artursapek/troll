@@ -8,7 +8,7 @@ const kijunPeriod  = 11 // Traditionally 26
 const chikouPeriod = kijunPeriod
 
 // The main export:
-type IchimokuLines struct {
+type Indicators struct {
   TenkenSen  float32
   KijunSen   float32
   ChikouSpan float32

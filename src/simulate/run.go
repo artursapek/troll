@@ -55,9 +55,10 @@ func Simulate() {
 
   for i := 0; i < amt; i ++ {
     price := prices[i]
-    now := price.Time.Local
+    //now := price.Time.Local
 
-    fmt.Println(market.NewIntervalHasClosed(now))
+    market.ProcessPrice(price)
+
     fmt.Println(price.Price)
   }
 }

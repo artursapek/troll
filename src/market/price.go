@@ -23,7 +23,7 @@ func alreadyRecorded(time int64) bool {
 
 func getPricesBetween (start, end int64) (prices []MarketPrice) {
   // Find all statuses between the two dates, excluding the given status
-  query := bson.M{ "servertime": bson.M{ "$gte": start, "$lt": end }}
+  query := bson.M{ "time.server": bson.M{ "$gt": start, "$lte": end }}
   err := data.Prices.Find(query).Sort("-time.server").All(&prices)
   if err != nil {
     fmt.Println(err) // Log it, and return empty
@@ -59,12 +59,18 @@ func RecordPrice() (price MarketPrice) {
     log.Println(err)
   }
 
+  // Summarize 2-hour interval if it's time to
+  ProcessPrice(price)
+
   return price
 }
 
 func ProcessPrice(price MarketPrice) {
-  if NewIntervalHasClosed(price.Time.Local) {
-    
+  lastClose := lastIntervalCloseTime()
+  if price.Time.Local - lastClose >= INTERVAL_PERIOD {
+    // If it's been at least two hours since the last interval,
+    // let's record the newest.
+    RecordInterval(lastClose)
   }
 }
 

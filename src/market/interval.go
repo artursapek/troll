@@ -1,6 +1,7 @@
 package market
 
 import (
+  "fmt"
   "time"
   "data"
   "ichimoku"
@@ -14,57 +15,52 @@ type MarketInterval struct {
     Close int64
   }
   CandleStick CandleStick
-  Ichimoku ichimoku.IchimokuLines
+  Ichimoku ichimoku.Indicators
 }
 
-func LastInterval() MarketInterval {
-  var intervals []MarketInterval
-  data.Intervals.Find(nil).Sort("-closetime").Limit(1).All(&intervals)
-  if len(intervals) == 0 {
-    return MarketInterval{}
-  } else {
-    return intervals[0]
-  }
+func RecordInterval(openTime int64) (interval MarketInterval) {
+  closeTime := openTime + INTERVAL_PERIOD
+  prices := getPricesBetween(openTime, closeTime)
+
+  fmt.Println(len(prices))
+
+  interval.Time.Open = openTime
+  interval.Time.Close = closeTime
+  interval.CandleStick = createCandleStick(prices)
+
+  data.Intervals.Insert(&interval)
+
+  return interval
 }
+
+// Helpers
 
 func roundUpToNearest2Hour(timestamp int64) int64 {
   t := time.Unix(timestamp, 0)
   tRounded := t.Round(INTERVAL_PERIOD * time.Second).Unix()
 
   if t.Unix() > tRounded {
-    // That means we rounded down, so we want to add another
-    // INTERVAL_PERIOD to get a full segment as long as INTERVAL_PERIOD.
+    // That means we rounded down, and we wanted to round up
     tRounded += INTERVAL_PERIOD
   }
 
   return tRounded
 }
 
-func LastIntervalCloseTime() int64 {
-  lastInterval := LastInterval()
-  var timestamp int64
-  if (lastInterval == MarketInterval{}) {
-    // If we have no intervals, just use the first price's time
-    timestamp = getFirstPrice().Time.Local
-  } else {
+func lastIntervalCloseTime() int64 {
+  intervals := pastNIntervals(1)
+  if len(intervals) == 1 {
     // If it does exist, return its close time like we expected
-    timestamp = lastInterval.Time.Close
+    return intervals[0].Time.Close
+  } else {
+    // If we have no intervals, just use the first price's time
+    timestamp := getFirstPrice().Time.Local
+    return roundUpToNearest2Hour(timestamp)
   }
-  return timestamp
 }
 
-func TimeSinceLastInterval(now int64) int64 {
-  return now - LastIntervalCloseTime()
-}
-
-func NewIntervalHasClosed(now int64) bool {
-  return TimeSinceLastInterval(now) > INTERVAL_PERIOD
-}
-
-
-func RecordInterval() (interval MarketInterval) {
-  // now := int64(time.Now().Unix())
-  
-  return interval
+func pastNIntervals(n int) (intervals []MarketInterval) {
+  data.Intervals.Find(nil).Sort("-time.close").Limit(n).All(&intervals)
+  return intervals
 }
 

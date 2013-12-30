@@ -4,7 +4,7 @@ type CandleStick struct {
   Open, Close, High, Low  float32
 }
 
-func CreateCandleStick(prices []MarketPrice) CandleStick {
+func createCandleStick(prices []MarketPrice) CandleStick {
 
   var low  float32 = 99999999999
   var high float32 = 0
