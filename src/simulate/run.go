@@ -35,6 +35,7 @@ func init() {
 }
 
 func Simulate() {
+  fmt.Println("Simulating...")
   var skip, limit int
   if len(os.Args) < 3 {
     skip = 0

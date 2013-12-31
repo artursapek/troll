@@ -13,6 +13,7 @@ type MarketInterval struct {
     Open  int64
     Close int64
   }
+  SAR ParabolicSAR
   CandleStick CandleStick
   Ichimoku ichimoku.Indicators
 }
@@ -24,6 +25,22 @@ func RecordInterval(openTime int64) (interval MarketInterval) {
   interval.Time.Open = openTime
   interval.Time.Close = closeTime
   interval.CandleStick = createCandleStick(prices)
+
+  // Calculating the SAR
+  lastTwo := pastNIntervals(2)
+  if len(lastTwo) == 2 {
+    // It comes out sorted by time decrementing
+    prev, prevPrev := lastTwo[0], lastTwo[1]
+    interval.SAR = CalculateParabolicSAR(interval, prev, prevPrev)
+  } else {
+    interval.SAR = ParabolicSAR{
+      Value: 0,
+      Position: "long",
+      Acc: SAR_ACC_INCREMENT,
+      AccD: 0,
+    }
+  }
+
 
   data.Intervals.Insert(&interval)
 
