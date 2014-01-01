@@ -54,18 +54,23 @@ func Simulate() {
 
   amt := len(intervals)
 
-  //self := MakeTrollFromStatus(intervals[0].CandleStick.Open, intervals[0].Time.Open)
+  self := MakeTrollFromStatus(intervals[0].CandleStick.Open, intervals[0].Time.Open)
 
   for i := 0; i < amt; i ++ {
     interval := intervals[i]
     interval = market.AnalyzeInterval(interval)
+
+    market.PersistUpdatedInterval(interval)
+
+    /*
     fmt.Printf("%d,%f,%f,%f,%f,%f\n", interval.Time.Close,
                interval.CandleStick.Open,
                interval.CandleStick.Close,
                interval.CandleStick.High,
                interval.CandleStick.Low,
                interval.SAR.Value)
-    //self = self.Decide(interval)
+               */
+    self = self.Decide(interval)
   }
   /*
   for i := 0; i < amt; i ++ {

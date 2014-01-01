@@ -1,7 +1,6 @@
 package market
 
 import (
-  "fmt"
   "mathutils"
   "data"
   "labix.org/v2/mgo/bson"
@@ -53,14 +52,9 @@ func AnalyzeInterval(interval MarketInterval) MarketInterval {
   return interval
 }
 
-func SetPosition(interval MarketInterval, position string) {
-  if position != "long" && position != "short" {
-    panic("Invalid position")
-  } else {
-    query  := bson.M{ "time.close": interval.Time.Close }
-    update := bson.M{ "$set": bson.M { "position": position }}
-    data.Intervals.Update(query, update)
-  }
+func PersistUpdatedInterval(interval MarketInterval) {
+  query  := bson.M{ "time.close": interval.Time.Close }
+  data.Intervals.Update(query, interval)
 }
 
 // Helpers
