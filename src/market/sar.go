@@ -1,5 +1,9 @@
 package market
 
+import (
+  "mathutils"
+)
+
 // Calculating parabolic SAR (stop and reverse)
 
 const SAR_ACC_INCREMENT float32 = 0.025
@@ -15,30 +19,13 @@ type ParabolicSAR struct {
   AccD float32
 }
 
-// No generics. :(
-func max(a, b float32) float32 {
-  if (a > b) {
-    return a
-  } else {
-    return b
-  }
+var DefaultSAR = ParabolicSAR{
+  Value: 0,
+  Position: "long",
+  Acc: SAR_ACC_INCREMENT,
+  AccD: 0,
 }
 
-func min(a, b float32) float32 {
-  if (a < b) {
-    return a
-  } else {
-    return b
-  }
-}
-
-func abs(a float32) float32 {
-  if a >= 0 {
-    return a
-  } else {
-    return -a
-  }
-}
 
 func CalculateParabolicSAR(curr, prev, prevPrev MarketInterval) (SAR ParabolicSAR) {
 
@@ -49,8 +36,8 @@ func CalculateParabolicSAR(curr, prev, prevPrev MarketInterval) (SAR ParabolicSA
   var epCurr, epPrev float32
 
   if prev.SAR.Position == "long" {
-    epCurr = max(curr.CandleStick.High, prev.CandleStick.High)
-    epPrev = max(prev.CandleStick.High, prevPrev.CandleStick.High)
+    epCurr = mathutils.Max(curr.CandleStick.High, prev.CandleStick.High)
+    epPrev = mathutils.Max(prev.CandleStick.High, prevPrev.CandleStick.High)
 
     // If we have a new extreme price increment the acceleration factor
     if epCurr > epPrev { 
@@ -61,8 +48,8 @@ func CalculateParabolicSAR(curr, prev, prevPrev MarketInterval) (SAR ParabolicSA
     }
 
   } else {
-    epCurr = min(curr.CandleStick.Low, prev.CandleStick.Low)
-    epPrev = min(prev.CandleStick.Low, prevPrev.CandleStick.Low)
+    epCurr = mathutils.Min(curr.CandleStick.Low, prev.CandleStick.Low)
+    epPrev = mathutils.Min(prev.CandleStick.Low, prevPrev.CandleStick.Low)
 
     if epCurr < epPrev {
       SAR.Acc += SAR_ACC_INCREMENT
@@ -73,7 +60,7 @@ func CalculateParabolicSAR(curr, prev, prevPrev MarketInterval) (SAR ParabolicSA
   }
 
 
-  SAR.AccD = SAR.Acc * abs(epCurr - prev.SAR.Value)
+  SAR.AccD = SAR.Acc * mathutils.Abs(epCurr - prev.SAR.Value)
 
   if prev.SAR.Position == "long" {
     if (prev.SAR.Value + prev.SAR.AccD) > curr.CandleStick.Low {
@@ -83,7 +70,7 @@ func CalculateParabolicSAR(curr, prev, prevPrev MarketInterval) (SAR ParabolicSA
       SAR.Acc = SAR_ACC_INCREMENT
     } else {
       SAR.Position = "long"
-      SAR.Value = min(min((prev.SAR.Value + prev.SAR.AccD), prev.CandleStick.Low), prevPrev.CandleStick.Low)
+      SAR.Value = mathutils.Min(mathutils.Min((prev.SAR.Value + prev.SAR.AccD), prev.CandleStick.Low), prevPrev.CandleStick.Low)
     }
   } else {
     if (prev.SAR.Value - prev.SAR.AccD) < curr.CandleStick.High {
@@ -93,7 +80,7 @@ func CalculateParabolicSAR(curr, prev, prevPrev MarketInterval) (SAR ParabolicSA
       SAR.Acc = SAR_ACC_INCREMENT
     } else {
       SAR.Position = "short"
-      SAR.Value = max(max((prev.SAR.Value - prev.SAR.AccD), prev.CandleStick.High), prevPrev.CandleStick.High)
+      SAR.Value = mathutils.Max(mathutils.Max((prev.SAR.Value - prev.SAR.AccD), prev.CandleStick.High), prevPrev.CandleStick.High)
     }
   }
   return SAR

@@ -11,19 +11,19 @@ import (
 )
 
 // Start at any point in the simulation
-func MakeTrollFromStatus(status market.MarketPrice) troll.Troll {
+func MakeTrollFromStatus(price float32, time int64) troll.Troll {
   funds := troll.FundsStatus{
-    BTC: 1.0,
-    USD: 0,
+    BTC: 0,
+    USD: price,
   }
   return troll.Troll{ 
     Funds: funds,
     LastTrade: btce.OwnTrade{
       Pair: "btc_usd",
-      Type: "buy",
+      Type: "sell",
       Amount: 1.0,
-      Rate: status.Price,
-      Timestamp: status.Time.Server,
+      Rate: price,
+      Timestamp: time,
     },
   }
 
@@ -31,7 +31,7 @@ func MakeTrollFromStatus(status market.MarketPrice) troll.Troll {
 
 func init() {
   // Clear the intervals, which we're generating ourselves.
-  data.Intervals.DropCollection()
+//  data.Intervals.DropCollection()
 }
 
 func Simulate() {
@@ -45,19 +45,40 @@ func Simulate() {
     limit, _ = strconv.Atoi(os.Args[3])
   }
 
-  var prices []market.MarketPrice
-  data.Prices.Find(nil).Skip(skip).Limit(limit).All(&prices)
 
-  amt := len(prices)
+  var intervals []market.MarketInterval
+  data.Intervals.Find(nil).Skip(skip).Limit(limit).All(&intervals)
 
-  //self := MakeTrollFromStatus(prices[0])
+  //var prices []market.MarketPrice
+  //data.Prices.Find(nil).Skip(skip).Limit(limit).All(&prices)
 
+  amt := len(intervals)
+
+  //self := MakeTrollFromStatus(intervals[0].CandleStick.Open, intervals[0].Time.Open)
+
+  for i := 0; i < amt; i ++ {
+    interval := intervals[i]
+    interval = market.AnalyzeInterval(interval)
+    fmt.Printf("%d,%f,%f,%f,%f,%f\n", interval.Time.Close,
+               interval.CandleStick.Open,
+               interval.CandleStick.Close,
+               interval.CandleStick.High,
+               interval.CandleStick.Low,
+               interval.SAR.Value)
+    //self = self.Decide(interval)
+  }
+  /*
   for i := 0; i < amt; i ++ {
     price := prices[i]
     //now := price.Time.Local
 
-    market.ProcessPrice(price)
-    fmt.Printf(".")
+    lastClose, isDue := market.CheckIfNewIntervalIsDue(price.Time.Local)
+
+    if isDue {
+      interval := market.RecordInterval(lastClose)
+      self = self.Decide(interval)
+    }
   }
+  */
 }
 

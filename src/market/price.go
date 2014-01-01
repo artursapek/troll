@@ -59,19 +59,5 @@ func RecordPrice() (price MarketPrice) {
     log.Println(err)
   }
 
-  // Summarize 2-hour interval if it's time to
-  ProcessPrice(price)
-
   return price
 }
-
-func ProcessPrice(price MarketPrice) {
-  lastClose := lastIntervalCloseTime()
-  if price.Time.Local - lastClose >= INTERVAL_PERIOD {
-    // If it's been at least two hours since the last interval,
-    // let's record the newest.
-    RecordInterval(lastClose)
-    fmt.Printf("0")
-  }
-}
-

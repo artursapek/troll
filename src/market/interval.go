@@ -1,9 +1,10 @@
 package market
 
 import (
-  "time"
+  "fmt"
+  "mathutils"
   "data"
-  "ichimoku"
+  "labix.org/v2/mgo/bson"
 )
 
 const INTERVAL_PERIOD = 60 * 60 * 2 // 2 hours in seconds
@@ -13,10 +14,15 @@ type MarketInterval struct {
     Open  int64
     Close int64
   }
-  SAR ParabolicSAR
+  SAR         ParabolicSAR
   CandleStick CandleStick
-  Ichimoku ichimoku.Indicators
+  Ichimoku    Indicators
+  Position    string // "long" or "short"
 }
+
+type MarketIntervals []MarketInterval
+
+// Creator
 
 func RecordInterval(openTime int64) (interval MarketInterval) {
   closeTime := openTime + INTERVAL_PERIOD
@@ -26,55 +32,80 @@ func RecordInterval(openTime int64) (interval MarketInterval) {
   interval.Time.Close = closeTime
   interval.CandleStick = createCandleStick(prices)
 
-  // Calculating the SAR
-  lastTwo := pastNIntervals(2)
-  if len(lastTwo) == 2 {
-    // It comes out sorted by time decrementing
-    prev, prevPrev := lastTwo[0], lastTwo[1]
-    interval.SAR = CalculateParabolicSAR(interval, prev, prevPrev)
-  } else {
-    interval.SAR = ParabolicSAR{
-      Value: 0,
-      Position: "long",
-      Acc: SAR_ACC_INCREMENT,
-      AccD: 0,
-    }
-  }
-
-
+  // Persist to db
   data.Intervals.Insert(&interval)
+
+  interval = AnalyzeInterval(interval)
 
   return interval
 }
 
-// Helpers
+func AnalyzeInterval(interval MarketInterval) MarketInterval {
+   // Calculating the SAR
+  prev := PrevInterval(interval)
+  prevPrev := PrevInterval(prev)
+  // It comes out sorted by time decrementing
+  interval.SAR = CalculateParabolicSAR(interval, prev, prevPrev)
 
-func roundUpToNearest2Hour(timestamp int64) int64 {
-  t := time.Unix(timestamp, 0)
-  tRounded := t.Round(INTERVAL_PERIOD * time.Second).Unix()
+  // Calculating the Ichimoku indicators for this interval
+  interval.Ichimoku = CalculateIndicators(interval)
 
-  if t.Unix() > tRounded {
-    // That means we rounded down, and we wanted to round up
-    tRounded += INTERVAL_PERIOD
-  }
-
-  return tRounded
+  return interval
 }
 
+func SetPosition(interval MarketInterval, position string) {
+  if position != "long" && position != "short" {
+    panic("Invalid position")
+  } else {
+    query  := bson.M{ "time.close": interval.Time.Close }
+    update := bson.M{ "$set": bson.M { "position": position }}
+    data.Intervals.Update(query, update)
+  }
+}
+
+// Helpers
+
 func lastIntervalCloseTime() int64 {
-  intervals := pastNIntervals(1)
+  intervals := PastNIntervals(1)
   if len(intervals) == 1 {
     // If it does exist, return its close time like we expected
     return intervals[0].Time.Close
   } else {
     // If we have no intervals, just use the first price's time
     timestamp := getFirstPrice().Time.Local
-    return roundUpToNearest2Hour(timestamp)
+    return mathutils.RoundUpToNearestInterval(timestamp, INTERVAL_PERIOD)
   }
 }
 
-func pastNIntervals(n int) (intervals []MarketInterval) {
+func CheckIfNewIntervalIsDue(currentTime int64) (int64, bool) {
+  lastClose := lastIntervalCloseTime()
+  return lastClose, (currentTime - lastClose) >= INTERVAL_PERIOD
+}
+
+
+
+// Getters
+
+func PastNIntervals(n int) (intervals MarketIntervals) {
   data.Intervals.Find(nil).Sort("-time.close").Limit(n).All(&intervals)
   return intervals
+}
+
+func PrevInterval(interval MarketInterval) MarketInterval {
+  var intervals MarketIntervals
+  query := bson.M{ "time.close": bson.M{ "$lt": interval.Time.Close } }
+  data.Intervals.Find(query).Sort("-time.close").Limit(1).All(&intervals)
+
+  if len(intervals) == 0 { return MarketInterval{} }
+  return intervals[0]
+}
+
+func NextInterval(interval MarketInterval) MarketInterval {
+  var intervals MarketIntervals
+  query := bson.M{ "time.close": bson.M{ "$gt": interval.Time.Close } }
+  data.Intervals.Find(query).Sort("time.close").Limit(1).All(&intervals)
+
+  if len(intervals) == 0 { return MarketInterval{} }
+  return intervals[0]
 }
 

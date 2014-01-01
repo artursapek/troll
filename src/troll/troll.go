@@ -2,7 +2,7 @@ package troll
 
 import (
   "btce"
-//  "market"
+  "market"
   "time"
 )
 
@@ -22,12 +22,19 @@ func CreateSyncedTroll() Troll {
   }
 }
 
-func (troll Troll) Setup() {}
+func (self Troll) Setup() { /* noop */ }
 
-func (troll Troll) Perform() time.Duration {
-  // Record the current market price and analyze it
-  //status := market.RecordPrice()
-  //troll.Decide(status)
+func (self Troll) Perform() time.Duration {
+  // Record the current market price
+  price := market.RecordPrice()
+
+  lastClose, isDue := market.CheckIfNewIntervalIsDue(price.Time.Local)
+
+  if isDue {
+    interval := market.RecordInterval(lastClose)
+    self.Decide(interval)
+  }
+
   return time.Duration(15)
 }
 
