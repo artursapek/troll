@@ -15,7 +15,7 @@ body {
 }
 
 line.buy, line.sell {
-  stroke-width: 4px;
+  stroke-width: 3px;
 }
 
 line.buy {
@@ -23,6 +23,9 @@ line.buy {
 }
 
 line.sell {
-
   stroke: rgba(197,28,28,0.3);
+}
+
+circle.sar {
+  fill: #37697c;
 }

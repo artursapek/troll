@@ -1,5 +1,5 @@
 (function () {
-  var  w = innerWidth
+  var  w
      , h = innerHeight
      ;
 
@@ -15,7 +15,9 @@
   $.getJSON('http://localhost:8080/prices.json', drawCandles);
 
   function drawCandles(candles) {
-    candles = candles.slice(1000)
+    //candles = candles.slice(1000)
+    w = candles.length * 5
+
     var minPrice = candles.reduce(function (a, c) {
       return Math.min(a, c.CandleStick.Low, c.CandleStick.Close, c.CandleStick.Open);
     }, 1/0);
@@ -26,11 +28,17 @@
     svg = d3.select('body')
       .append('svg')
       .attr('shape-rendering', 'crispEdges')
-      .attr('width', w * 4)
+      .attr('width', w)
       .attr('height', h)
 
-    x = d3.scale.linear().domain(candles.map(function (c) { return c.Time.Close }))
-    y = d3.scale.linear().domain([minPrice - padding.y, maxPrice + padding.y])
+    x = d3.scale.linear()
+      .domain(d3.extent(candles, function (c) { return c.Time.Close }))
+      .range([0, w + 5])
+
+    y = d3.scale
+      .linear()
+      .domain([minPrice - padding.y, maxPrice + padding.y])
+      .range([0, h])
 
     var crosshairY = svg.append('line')
       .attr('x1', 100)
@@ -55,10 +63,10 @@
       .attr('class', 'high-low')
       .attr('width', '1px')
       .attr('height', function (c) {
-        return (y(c.CandleStick.High) - y(c.CandleStick.Low)) * h
+        return (y(c.CandleStick.High) - y(c.CandleStick.Low))
       })
-      .attr('x', function (c) { return x(c.Time.Close) * 5; })
-      .attr('y', function (c) { return h - y(c.CandleStick.High) * h })
+      .attr('x', function (c) { return x(c.Time.Close) + 1; })
+      .attr('y', function (c) { return h - y(c.CandleStick.High)})
       .attr('fill', span)
       ;
 
@@ -68,23 +76,38 @@
       .attr('class', 'open-close')
       .attr('width', '2px')
       .attr('height', function (c) {
-        return Math.abs(y(c.CandleStick.Open) - y(c.CandleStick.Close)) * h
+        return Math.abs(y(c.CandleStick.Open) - y(c.CandleStick.Close))
       })
-      .attr('x', function (c) { return x(c.Time.Close) * 5 - 1; })
-      .attr('data-range-x', function (c) { return Math.round(x(c.Time.Close) * 5 - 1); })
+      .attr('x', function (c) {
+        return Math.round(x(c.Time.Close));
+      })
+      //.attr('data-range-x', function (c) { return x(c.Time.Close); })
       .attr('data-timestamp', function (c) { return c.Time.Close })
-      .attr('y', function (c) { return h - (y(Math.max(c.CandleStick.Close,c.CandleStick.Open)) * h) })
+      .attr('y', function (c) { return h - (y(Math.max(c.CandleStick.Close,c.CandleStick.Open))) })
       .attr('fill', '#171718')
       .attr('strokeWidth', '1')
       .attr('stroke', function (c) { return c.CandleStick.Close > c.CandleStick.Open ? green : red })
       ;
+
+    // Draw SAR
+    var SAR = svg.selectAll('circle.sar').data(candles).enter().append('circle')
+
+    SARAttrs = SAR
+      .attr('class', 'sar')
+      .attr('r', 1)
+      .attr('cx', function (c) {
+        return x(c.Time.Close)
+      })
+      .attr('cy', function (c) {
+        return Math.round(h - y(c.SAR.Value))
+      })
 
     $(document).mousemove(function (e) {
       var x = e.pageX;
       x -= (x % 5);
       crosshairY.attr('x1', x).attr('x2', x)
 
-      var $selectedCandleElem = $('rect[data-range-x="'+ (x - 1) +'"]')
+      var $selectedCandleElem = $('rect.open-close[x="'+ (x) +'"]')
         , selectedTime = $selectedCandleElem.attr('data-timestamp')
         , selectedCandle = candles.filter(function (can) { return can.Time.Close == selectedTime })[0]
 
@@ -110,8 +133,8 @@
 
     var tradeAttrs = tradeMarks
       .attr('class', function (t) { return t.Type })
-      .attr('x1', function (t) { return x(t.Timestamp) * 5 })
-      .attr('x2', function (t) { return x(t.Timestamp) * 5 })
+      .attr('x1', function (t) { return x(t.Timestamp) })
+      .attr('x2', function (t) { return x(t.Timestamp) })
       .attr('y1', 0)
       .attr('y1', h)
   }
