@@ -7,7 +7,7 @@ import (
 )
 
 // Calculation periods (inclusive to current interval)
-const tenkanPeriod int = 8  // Traditionally 9
+const tenkanPeriod int = 7  // Traditionally 9
 const kijunPeriod  int = 11 // Traditionally 26
 
 type Indicators struct {

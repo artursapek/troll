@@ -3,6 +3,7 @@ package troll
 import (
   "fmt"
   "btce"
+  "data"
   "market"
 )
 
@@ -27,6 +28,8 @@ func (troll Troll) Sell(interval market.MarketInterval) Troll {
     Rate: rate,
     Timestamp: interval.Time.Close,
   }
+
+  data.Trades.Insert(&newTrade)
 
   troll.Funds.BTC = 0
   troll.Funds.USD = usd
@@ -56,6 +59,8 @@ func (troll Troll) Buy(interval market.MarketInterval) Troll {
     Rate: rate,
     Timestamp: interval.Time.Close,
   }
+
+  data.Trades.Insert(&newTrade)
 
   troll.Funds.BTC = btc
   troll.Funds.USD = 0

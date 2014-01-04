@@ -1,0 +1,28 @@
+
+
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  background: #171718;
+  cursor: none;
+}
+
+.anchor-label {
+  fill: rgba(255,255,255,0.6);
+  font-family: Arial;
+  font-size: 12px;
+}
+
+line.buy, line.sell {
+  stroke-width: 4px;
+}
+
+line.buy {
+  stroke: rgba(255, 255, 255, 0.2);
+}
+
+line.sell {
+
+  stroke: rgba(197,28,28,0.3);
+}

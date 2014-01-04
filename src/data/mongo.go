@@ -12,6 +12,7 @@ var mongoSession = newSession()
 
 var Prices    *mgo.Collection
 var Intervals *mgo.Collection
+var Trades    *mgo.Collection
 
 func newSession() *mgo.Session {
   session, err := mgo.Dial(mongoUrl)
@@ -43,6 +44,17 @@ func getIntervalsCollection() *mgo.Collection {
   return nil
 }
 
+func getTradesCollection() *mgo.Collection {
+  // Candlestick and Ichimoku lines (2hr)
+  switch env.Env {
+  case env.PRODUCTION:
+    return getCollection("trades")
+  case env.SIMULATION:
+    return getCollection("test_trades")
+  }
+  return nil
+}
+
 func getCollection(collection string) *mgo.Collection {
   return mongoSession.DB(mongoDBName).C(collection)
 }
@@ -51,5 +63,6 @@ func init() {
   // Memoize collections
   Prices =    getPricesCollection()
   Intervals = getIntervalsCollection()
+  Trades =    getTradesCollection()
 }
 

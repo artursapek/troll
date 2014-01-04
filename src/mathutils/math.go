@@ -35,6 +35,10 @@ func Abs(a float32) float32 {
   }
 }
 
+func Diff(a, b float32) float32 {
+  return ((a - b) / ((a + b) / 2)) * 100
+}
+
 func RoundUpToNearestInterval(timestamp int64, timeInterval time.Duration) int64 {
   t := time.Unix(timestamp, 0)
   tRounded := t.Round(timeInterval * time.Second).Unix()

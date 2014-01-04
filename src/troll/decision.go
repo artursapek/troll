@@ -22,35 +22,50 @@ func (troll Troll) Decide(interval market.MarketInterval) Troll {
 
   diff = mathutils.Abs(diff)
 
+  // Is the SAR below the price?
+  sarBullish := interval.CandleStick.Close > interval.SAR.Value 
+
+  maxKumo := mathutils.Max(senkouA, senkouB)
+  minKumo := mathutils.Min(senkouA, senkouB)
+
+  price := interval.CandleStick.Close
+
+  tkDiff := mathutils.Diff(tenkan, kijun)
+
+  chikouSpan := price - chikou
 
   if troll.Waiting() {
 
     if diff >= CLOSE_THRESHOLD {
       // R3
-      if tenkan > kijun &&
-         interval.CandleStick.Close > interval.SAR.Value {
+      // Signs point to bullish
+      if tenkan > kijun && 
+         tkDiff > 2.4 &&
+         sarBullish {
 
         troll = troll.Buy(interval)
         fmt.Println("R3")
       }
     } else if diff >= OPEN_THRESHOLD {
       // R4
+      // Bullish
       if tenkan > kijun &&
-         interval.CandleStick.Close > chikou &&
-         mathutils.Min(tenkan, kijun) > mathutils.Max(senkouA, senkouB) {
+         chikouSpan <= 0 &&
+         mathutils.Min(tenkan, kijun) > maxKumo {
+         //mathutils.Min(tenkan, kijun) > mathutils.Max(senkouA, senkouB) {
 
         troll = troll.Buy(interval)
         fmt.Println("R4")
       }
     }
 
-
   } else {
 
     if diff >= CLOSE_THRESHOLD {
       // R1
       if tenkan < kijun &&
-         interval.CandleStick.Close < interval.SAR.Value {
+         tkDiff <= 2.1 &&
+         !sarBullish {
 
         troll = troll.Sell(interval)
         fmt.Println("R1")
@@ -58,8 +73,8 @@ func (troll Troll) Decide(interval market.MarketInterval) Troll {
     } else if diff >= OPEN_THRESHOLD {
       // R2
       if tenkan < kijun &&
-         interval.CandleStick.Close < chikou &&
-         mathutils.Max(tenkan, kijun) > mathutils.Min(senkouA, senkouB) {
+         chikouSpan >= 0 &&
+         mathutils.Max(tenkan, kijun) < minKumo {
 
         troll = troll.Sell(interval)
         fmt.Println("R2")
@@ -67,41 +82,5 @@ func (troll Troll) Decide(interval market.MarketInterval) Troll {
     }
 
   }
-
   return troll
-
-  /*
-  if diff >= CLOSE_THRESHOLD {
-    prev := market.PrevInterval(interval)
-    if (prev.Position == "long") && (tenkan < kijun) &&
-       (interval.CandleStick.Close < interval.SAR.Value) {
-
-      fmt.Println("R1")
-      return troll.Sell(interval)
-
-    } else if (prev.Position == "short") && (tenkan > kijun) &&
-              (interval.CandleStick.Close > interval.SAR.Value) {
-
-      fmt.Println("R2")
-      return troll.Buy(interval)
-    }
-  } else if diff >= OPEN_THRESHOLD {
-    if (tenkan > kijun) && (interval.CandleStick.Close > chikou) &&
-       (mathutils.Min(tenkan, kijun) > mathutils.Max(senkouA, senkouB)) {
-
-      fmt.Println("R3")
-      market.SetPosition(interval, "long")
-      return troll.Buy(interval)
-
-    } else if (tenkan < kijun) && (interval.CandleStick.Close < chikou) &&
-       (mathutils.Max(tenkan, kijun) > mathutils.Min(senkouA, senkouB)) {
-
-      fmt.Println("R4")
-      market.SetPosition(interval, "short")
-      return troll.Sell(interval)
-    }
-  }
-
-  return troll
-  */
 }

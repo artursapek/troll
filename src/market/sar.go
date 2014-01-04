@@ -59,7 +59,6 @@ func CalculateParabolicSAR(curr, prev, prevPrev MarketInterval) (SAR ParabolicSA
     }
   }
 
-
   SAR.AccD = SAR.Acc * mathutils.Abs(epCurr - prev.SAR.Value)
 
   if prev.SAR.Position == "long" {

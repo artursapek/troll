@@ -29,12 +29,8 @@ func MakeTrollFromStatus(price float32, time int64) troll.Troll {
 
 }
 
-func init() {
-  // Clear the intervals, which we're generating ourselves.
-//  data.Intervals.DropCollection()
-}
-
 func Simulate() {
+  data.Trades.DropCollection()
   fmt.Println("Simulating...")
   var skip, limit int
   if len(os.Args) < 3 {
@@ -47,7 +43,7 @@ func Simulate() {
 
 
   var intervals []market.MarketInterval
-  data.Intervals.Find(nil).Skip(skip).Limit(limit).All(&intervals)
+  data.Intervals.Find(nil).Skip(skip).Limit(limit).Sort("time.close").All(&intervals)
 
   //var prices []market.MarketPrice
   //data.Prices.Find(nil).Skip(skip).Limit(limit).All(&prices)
@@ -62,12 +58,17 @@ func Simulate() {
 
     market.PersistUpdatedInterval(interval)
 
-    /*
-    fmt.Printf("%d,%f,%f,%f,%f,%f\n", interval.Time.Close,
+  /*
+    fmt.Printf("%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n", interval.Time.Close,
                interval.CandleStick.Open,
                interval.CandleStick.Close,
                interval.CandleStick.High,
                interval.CandleStick.Low,
+               interval.Ichimoku.TenkenSen,
+               interval.Ichimoku.KijunSen,
+               interval.Ichimoku.SenkouSpanA,
+               interval.Ichimoku.SenkouSpanB,
+               interval.Ichimoku.ChikouSpan,
                interval.SAR.Value)
                */
     self = self.Decide(interval)

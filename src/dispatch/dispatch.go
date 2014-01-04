@@ -34,6 +34,8 @@ func Dispatch(command string) {
     switch command {
     case "run":
       simulate.Simulate()
+    case "http":
+      simulate.StartServer()
     default:
       panic(fmt.Sprintf("Unknown command: %s", command))
     }
