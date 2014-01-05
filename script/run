@@ -1,3 +1,3 @@
 #!/bin/bash
 
-nohup ./troll run -live >> log/troll.log &
+./troll run -live >> log/troll.log &
