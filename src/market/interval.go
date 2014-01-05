@@ -31,10 +31,11 @@ func RecordInterval(openTime int64) (interval MarketInterval) {
   interval.Time.Close = closeTime
   interval.CandleStick = createCandleStick(prices)
 
-  // Persist to db
-  data.Intervals.Insert(&interval)
 
   interval = AnalyzeInterval(interval)
+
+  // Persist to db
+  data.Intervals.Insert(&interval)
 
   return interval
 }

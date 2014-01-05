@@ -26,13 +26,11 @@ func MakeTrollFromStatus(price float32, time int64) troll.Troll {
       Timestamp: time,
     },
   }
-
 }
 
-func Simulate() {
-  data.Trades.DropCollection()
-  fmt.Println("Simulating...")
-  var skip, limit int
+var skip, limit int
+
+func init () {
   if len(os.Args) < 3 {
     skip = 0
     limit = 999999999999
@@ -40,13 +38,15 @@ func Simulate() {
     skip, _ = strconv.Atoi(os.Args[2])
     limit, _ = strconv.Atoi(os.Args[3])
   }
+}
 
+
+func Trade() {
+  data.Trades.DropCollection()
+  fmt.Println("Simulating...")
 
   var intervals []market.MarketInterval
   data.Intervals.Find(nil).Skip(skip).Limit(limit).Sort("time.close").All(&intervals)
-
-  //var prices []market.MarketPrice
-  //data.Prices.Find(nil).Skip(skip).Limit(limit).All(&prices)
 
   amt := len(intervals)
 
@@ -57,34 +57,25 @@ func Simulate() {
     interval = market.AnalyzeInterval(interval)
 
     market.PersistUpdatedInterval(interval)
-
-  /*
-    fmt.Printf("%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n", interval.Time.Close,
-               interval.CandleStick.Open,
-               interval.CandleStick.Close,
-               interval.CandleStick.High,
-               interval.CandleStick.Low,
-               interval.Ichimoku.TenkanSen,
-               interval.Ichimoku.KijunSen,
-               interval.Ichimoku.SenkouSpanA,
-               interval.Ichimoku.SenkouSpanB,
-               interval.Ichimoku.ChikouSpan,
-               interval.SAR.Value)
-               */
     self = self.Decide(interval)
   }
-  /*
-  for i := 0; i < amt; i ++ {
-    price := prices[i]
-    //now := price.Time.Local
+}
+
+
+func BuildIntervals() {
+  data.Intervals.DropCollection()
+
+  var prices []market.MarketPrice
+  data.Prices.Find(nil).Skip(skip).Limit(limit).All(&prices)
+
+  for _, price := range prices {
 
     lastClose, isDue := market.CheckIfNewIntervalIsDue(price.Time.Local)
 
     if isDue {
-      interval := market.RecordInterval(lastClose)
-      self = self.Decide(interval)
+      market.RecordInterval(lastClose)
+      fmt.Printf(".")
     }
   }
-  */
 }
 

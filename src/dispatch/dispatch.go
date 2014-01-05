@@ -35,8 +35,10 @@ func Dispatch(command string) {
   } else {
     // SIMULATION
     switch command {
-    case "run":
-      simulate.Simulate()
+    case "simtrade":
+      simulate.Trade()
+    case "simintervals":
+      simulate.BuildIntervals()
     case "http":
       monitor.StartServer()
     case "status":

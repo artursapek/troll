@@ -39,7 +39,7 @@ func getIntervalsCollection() *mgo.Collection {
   case env.PRODUCTION:
     return getCollection("intervals")
   case env.SIMULATION:
-    return getCollection("test_2hrs")
+    return getCollection("test_intervals")
   }
   return nil
 }
