@@ -24,6 +24,8 @@ func Dispatch(command string) {
     switch command {
     case "run":
       troll.Run(troll.Troll{}, time.Duration(15))
+    case "rebuild":
+      troll.BuildIntervals()
     case "status":
       troll.LastUpdate()
     case "http":

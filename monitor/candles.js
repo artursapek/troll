@@ -38,7 +38,7 @@
     svg = d3.select('body')
       .append('svg')
       .attr('shape-rendering', 'crispEdges')
-      .attr('width', Math.max(w + 5, window.innerWidth))
+      .attr('width', Math.max(w + 5, window.innerWidth + 5))
       .attr('height', h)
 
     x = d3.scale.linear()

@@ -4,6 +4,8 @@ import (
   "btce"
   "market"
   "time"
+  "data"
+  "fmt"
 )
 
 const CLR_WHITE  = "\x1b[37;1m"
@@ -42,6 +44,24 @@ func (self Troll) Perform() time.Duration {
   }
 
   return time.Duration(15)
+}
+
+func BuildIntervals() {
+  data.Intervals.DropCollection()
+
+  var prices []market.MarketPrice
+  data.Prices.Find(nil).All(&prices)
+
+  for _, price := range prices {
+
+    lastClose, isDue := market.CheckIfNewIntervalIsDue(price.Time.Local)
+
+    if isDue {
+      market.RecordInterval(lastClose)
+      fmt.Printf(".")
+    }
+  }
+
 }
 
 
