@@ -1,0 +1,9 @@
+#!/bin/bash
+
+lastup=`./troll status -live`
+
+if [ $lastup -gt 60 ]
+then
+  echo "`date`: Main runner inactive for $lastup seconds. Re-upping." >> ../log/checkup.log
+  script/run
+fi

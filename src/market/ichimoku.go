@@ -11,7 +11,7 @@ const tenkanPeriod int = 7  // Traditionally 9
 const kijunPeriod  int = 11 // Traditionally 26
 
 type Indicators struct {
-  TenkenSen   float32
+  TenkanSen   float32
   KijunSen    float32
   SenkouSpanA float32
   SenkouSpanB float32
@@ -22,16 +22,16 @@ func CalculateIndicators(interval MarketInterval) (indicators Indicators) {
   // Hey cuz, get the intervals we need cuz
   intervals := GetIchimokuIntervalsUntil(interval)
 
-  indicators.TenkenSen   = MidPointOfHighLow(intervals, tenkanPeriod)
+  indicators.TenkanSen   = MidPointOfHighLow(intervals, tenkanPeriod)
   indicators.KijunSen    = MidPointOfHighLow(intervals, kijunPeriod)
-  indicators.SenkouSpanA = (indicators.KijunSen + indicators.TenkenSen) / 2
+  indicators.SenkouSpanA = (indicators.KijunSen + indicators.TenkanSen) / 2
   indicators.SenkouSpanB = MidPointOfHighLow(intervals, kijunPeriod * 2)
   indicators.ChikouSpan  = LaggingChikou(intervals)
   return indicators
 }
 
 func UnpackIchimoku(i Indicators) (float32, float32, float32, float32, float32) {
-  return i.TenkenSen, i.KijunSen, i.SenkouSpanA, i.SenkouSpanB, i.ChikouSpan
+  return i.TenkanSen, i.KijunSen, i.SenkouSpanA, i.SenkouSpanB, i.ChikouSpan
 }
 
 func MidPointOfHighLow(intervals MarketIntervals, n int) float32 {

@@ -1,5 +1,3 @@
-
-
 body {
   margin: 0;
   width: 100%;
@@ -26,6 +24,41 @@ line.sell {
   stroke: rgba(197,28,28,0.3);
 }
 
-circle.sar {
-  fill: #37697c;
+.sar {
+  fill: #6f9eaf;
+}
+
+body.hide-sar .sar {
+  display: none;
+}
+
+.kumo {
+  fill: rgba(255,255,255,0.05);
+}
+
+.senkou-span-a {
+  stroke: rgba(255,255,255,0.4);
+}
+
+.senkou-span-b {
+  stroke: rgba(197,28,28,0.3);
+}
+
+body.hide-kumo .kumo,
+body.hide-kumo .senkou-span-a,
+body.hide-kumo .senkou-span-b {
+  display: none;
+}
+
+.tenkan-sen {
+  stroke: #2b3e5a;
+}
+
+.kijun-sen {
+  stroke: #502b5a;
+}
+
+body.hide-tenkan-kijun .tenkan-sen ,
+body.hide-tenkan-kijun .kijun-sen {
+  display: none;
 }

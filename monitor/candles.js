@@ -18,6 +18,14 @@
     //candles = candles.slice(1000)
     w = candles.length * 5
 
+    candles = candles.sort(function (a, b) {
+      if (a.Time.Close < b.Time.Close) {
+        return -1;
+      } else {
+        return 1;
+      }
+    })
+
     var minPrice = candles.reduce(function (a, c) {
       return Math.min(a, c.CandleStick.Low, c.CandleStick.Close, c.CandleStick.Open);
     }, 1/0);
@@ -90,18 +98,45 @@
       ;
 
     // Draw SAR
-    var SAR = svg.selectAll('circle.sar').data(candles).enter().append('circle')
+    var SAR = svg.selectAll('rect.sar').data(candles).enter().append('rect')
 
     SARAttrs = SAR
       .attr('class', 'sar')
-      .attr('r', 1)
-      .attr('cx', function (c) {
-        return x(c.Time.Close)
+      .attr('x', function (c) {
+        return x(c.Time.Close) + 1
       })
-      .attr('cy', function (c) {
-        return Math.round(h - y(c.SAR.Value))
+      .attr('y', function (c) {
+        return h - Math.round(y(c.SAR.Value))
       })
+      .attr('width', 1)
+      .attr('height', 1)
 
+    var kumoGenerator = d3.svg.area()
+      .x(function (c) { return x(c.Time.Close) })
+      .y0(function (c) { return h - y(c.Ichimoku.SenkouSpanA) })
+      .y1(function (c) { return h - y(c.Ichimoku.SenkouSpanB) })
+
+    var kumo = svg.append('path')
+      .attr('d', kumoGenerator(candles))
+      .attr('class', 'kumo')
+
+    function drawLine(getter, className) {
+      var generator = d3.svg.line()
+        .x(function (c) { return x(c.Time.Close) })
+        .y(function (c) { return h - y(getter(c)) })
+
+      svg.append('path')
+        .attr('class', className)
+        .attr('fill', 'none')
+        .attr('d', generator(candles))
+    }
+
+    drawLine(function (c) { return c.Ichimoku.SenkouSpanA }, 'senkou-span-a')
+    drawLine(function (c) { return c.Ichimoku.SenkouSpanB }, 'senkou-span-b')
+    drawLine(function (c) { return c.Ichimoku.TenkanSen }, 'tenkan-sen')
+    drawLine(function (c) { return c.Ichimoku.KijunSen }, 'kijun-sen')
+
+    
     $(document).mousemove(function (e) {
       var x = e.pageX;
       x -= (x % 5);
@@ -133,10 +168,25 @@
 
     var tradeAttrs = tradeMarks
       .attr('class', function (t) { return t.Type })
-      .attr('x1', function (t) { return x(t.Timestamp) })
-      .attr('x2', function (t) { return x(t.Timestamp) })
-      .attr('y1', 0)
-      .attr('y1', h)
+      .attr('x1', function (t) { return x(t.Timestamp) + 1 })
+      .attr('x2', function (t) { return x(t.Timestamp) + 1 })
+      .attr('y1', function (t) { return h - y(t.Rate) - 150})
+      .attr('y2', function (t) { return h - y(t.Rate) + 150})
   }
+
+  $(document).keyup(function (e) {
+    var $body = $('body')
+    switch (e.which) {
+      case 75: // K
+        $body.toggleClass('hide-kumo');
+        break;
+      case 83: // S
+        $body.toggleClass('hide-sar');
+        break;
+      case 73: // I
+        $body.toggleClass('hide-tenkan-kijun');
+        break;
+    }
+  });
 
 }());

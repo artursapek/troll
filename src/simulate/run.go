@@ -64,7 +64,7 @@ func Simulate() {
                interval.CandleStick.Close,
                interval.CandleStick.High,
                interval.CandleStick.Low,
-               interval.Ichimoku.TenkenSen,
+               interval.Ichimoku.TenkanSen,
                interval.Ichimoku.KijunSen,
                interval.Ichimoku.SenkouSpanA,
                interval.Ichimoku.SenkouSpanB,

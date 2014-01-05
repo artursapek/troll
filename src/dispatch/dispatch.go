@@ -8,6 +8,7 @@ import (
   "troll"
   "simulate"
   "time"
+  "monitor"
 )
 
 // Use -live flag to run troll in live mode
@@ -24,7 +25,9 @@ func Dispatch(command string) {
     case "run":
       troll.Run(troll.Troll{}, time.Duration(15))
     case "status":
-      troll.Run(troll.StatusDaemon{}, time.Duration(1))
+      troll.LastUpdate()
+    case "http":
+      monitor.StartServer()
     default:
       panic(fmt.Sprintf("Unknown command: %s", command))
     }
@@ -35,7 +38,9 @@ func Dispatch(command string) {
     case "run":
       simulate.Simulate()
     case "http":
-      simulate.StartServer()
+      monitor.StartServer()
+    case "status":
+      troll.LastUpdate()
     default:
       panic(fmt.Sprintf("Unknown command: %s", command))
     }

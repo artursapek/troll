@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd monitor
+python -m SimpleHTTPServer 3333 >> log/monitor-server.log &

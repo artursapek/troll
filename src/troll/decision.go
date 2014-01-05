@@ -43,8 +43,8 @@ func (troll Troll) Decide(interval market.MarketInterval) Troll {
          tkDiff > 2.4 &&
          sarBullish {
 
-        troll = troll.Buy(interval)
         fmt.Println("R3")
+        troll = troll.Buy(interval)
       }
     } else if diff >= OPEN_THRESHOLD {
       // R4
@@ -54,8 +54,8 @@ func (troll Troll) Decide(interval market.MarketInterval) Troll {
          mathutils.Min(tenkan, kijun) > maxKumo {
          //mathutils.Min(tenkan, kijun) > mathutils.Max(senkouA, senkouB) {
 
-        troll = troll.Buy(interval)
         fmt.Println("R4")
+        troll = troll.Buy(interval)
       }
     }
 
@@ -67,8 +67,8 @@ func (troll Troll) Decide(interval market.MarketInterval) Troll {
          tkDiff <= 2.1 &&
          !sarBullish {
 
-        troll = troll.Sell(interval)
         fmt.Println("R1")
+        troll = troll.Sell(interval)
       }
     } else if diff >= OPEN_THRESHOLD {
       // R2
@@ -76,11 +76,10 @@ func (troll Troll) Decide(interval market.MarketInterval) Troll {
          chikouSpan >= 0 &&
          mathutils.Max(tenkan, kijun) < minKumo {
 
-        troll = troll.Sell(interval)
         fmt.Println("R2")
+        troll = troll.Sell(interval)
       }
     }
-
   }
   return troll
 }

@@ -6,6 +6,12 @@ import (
   "time"
 )
 
+const CLR_WHITE  = "\x1b[37;1m"
+const CLR_GREY   = "\x1b[30;1m"
+const CLR_GREEN  = "\x1b[32;1m"
+const CLR_YELLOW = "\x1b[33;1m"
+const CLR_RED    = "\x1b[31;1m"
+
 type Troll struct {
   Live bool
   Funds FundsStatus
@@ -31,8 +37,8 @@ func (self Troll) Perform() time.Duration {
   lastClose, isDue := market.CheckIfNewIntervalIsDue(price.Time.Local)
 
   if isDue {
-    interval := market.RecordInterval(lastClose)
-    self.Decide(interval)
+    market.RecordInterval(lastClose)
+    //self.Decide(interval)
   }
 
   return time.Duration(15)
