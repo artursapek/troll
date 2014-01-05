@@ -12,7 +12,9 @@
 
   var green = '#ffffff', red = '#c51c1c', span = '#56595d', crosshair = '#1f2021';
 
-  $.getJSON('http://localhost:8000/prices.json', drawCandles);
+  var HOST = 'http://' + window.location.hostname + ':8000'
+
+  $.getJSON(HOST + '/prices.json', drawCandles);
 
   function drawCandles(candles) {
     //candles = candles.slice(1000)
@@ -157,7 +159,7 @@
         .text(date.toDateString() + ' ' + date.getHours() + ':00')
     });
 
-    $.getJSON('http://localhost:8080/trades.json', markTrades);
+    $.getJSON(HOST + '/trades.json', markTrades);
   }
 
   function markTrades(trades) {
