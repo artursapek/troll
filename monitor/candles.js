@@ -15,7 +15,17 @@
 
   var HOST = 'http://' + window.location.hostname + ':8001'
 
-  $.getJSON(HOST + '/prices.json', drawCandles);
+  $.ajax({
+    type: 'get',
+    datatype: 'json',
+    url: HOST + '/prices.json',
+    success: drawCandles,
+    error: error
+  });
+
+  function error() {
+    $('#loading').text('server error. shit. sorry.');
+  }
 
   function drawCandles(candles) {
     candles = candles.filter(function (c) {

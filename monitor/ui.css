@@ -16,7 +16,7 @@ body {
 }
 
 #loading {
-  color: rgba(255,255,255,0.6);
+  color: rgba(255,255,255,0.4);
   position: absolute;
   top: 45%;
   width: 100%;
