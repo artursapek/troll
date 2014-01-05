@@ -2,7 +2,7 @@
   var  w
     , brushHeight = 80
     , h = innerHeight
-     ;
+    ;
 
   var padding = {
     x: 0
@@ -210,7 +210,10 @@
 
     //$.getJSON(HOST + '/trades.json', markTrades);
 
-    window.scrollTo(ww * 2, 0)
+    setTimeout(function () {
+      $('#loading').remove();
+      window.scrollTo(ww * 2, 0)
+    },0);
   }
 
   function markTrades(trades) {
