@@ -1,7 +1,7 @@
 (function () {
   var  w
     , brushHeight = 80
-    , h = innerHeight - brushHeight
+    , h = innerHeight
      ;
 
   var padding = {
