@@ -1,3 +1,4 @@
 #!/bin/bash
 
 nohup ./troll run -live >> log/troll.log &
+nohup script/start-monitor-server &
