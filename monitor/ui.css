@@ -1,3 +1,9 @@
+@font-face
+{
+  font-family: "px";
+  src: url(mc.ttf);
+}
+
 body {
   margin: 0;
   width: 100%;
@@ -12,7 +18,7 @@ body {
 
 .anchor-label {
   fill: rgba(255,255,255,0.5);
-  font-family: Minecraftia;
+  font-family: "px";
   font-size: 8px;
   font-smooth: never;
   -webkit-font-smoothing : none;
