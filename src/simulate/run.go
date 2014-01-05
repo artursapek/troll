@@ -30,7 +30,7 @@ func MakeTrollFromStatus(price float32, time int64) troll.Troll {
 
 var skip, limit int
 
-func init () {
+func parseSkipLimit() {
   if len(os.Args) < 3 {
     skip = 0
     limit = 999999999999
@@ -41,7 +41,9 @@ func init () {
 }
 
 
+
 func Trade() {
+  parseSkipLimit()
   data.Trades.DropCollection()
   fmt.Println("Simulating...")
 
@@ -63,6 +65,7 @@ func Trade() {
 
 
 func BuildIntervals() {
+  parseSkipLimit()
   data.Intervals.DropCollection()
 
   var prices []market.MarketPrice
