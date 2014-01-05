@@ -1,3 +1,5 @@
+/* CAUTION: QUCKLY-WRITTEN CSS **********************/
+
 @font-face
 {
   font-family: "px";
@@ -24,6 +26,89 @@ body {
   font-size: 12px;
 }
 
+/* LEGEND **********************/
+
+#legend {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  background: rgba(10,10,10,0.95);
+  padding: 10px;
+  color: rgba(255,255,255,0.7);
+  font-size: 8px;
+}
+
+#series {
+  float: left;
+}
+
+body.hide-legend #legend {
+  display: none;
+}
+
+#legend h2 {
+  margin: 0 0 5px 0;
+  font-size: 8px;
+}
+
+.legend-line__example {
+  display: inline-block;
+  margin: 3px 0;
+  height: 1px;
+  width: 20px;
+}
+
+
+.legend-line__example--kumo {
+  display: inline-block;
+  height: 6px;
+  background: rgba(255,255,255,0.1);
+  border-top: 1px solid rgba(255,255,255,0.4);
+  border-bottom: 1px solid rgba(197,28,28,0.3);
+  width: 20px;
+}
+
+.example--tenkan-sen {
+  background: #3d5e73;
+}
+
+.example--kijun-sen {
+  background: #502b5a;
+}
+
+.example--chikou-span {
+  background: #25341f;
+}
+
+.example--parabolic-sar {
+  background: url(data:image/png;base64,R0lGODlhBgABAJEAAAAAAP///3Odsf///yH5BAEAAAMALAAAAAAGAAEAAAID1H4FADs=);
+}
+
+label {
+  display: inline-block;
+  margin: 4px 0 4px 4px;
+}
+
+#hotkeys {
+  margin-left: 10px;
+  float: right;
+}
+
+.hotkey {
+  border: 1px solid rgba(255,255,255,0.3);
+  width: 14px;
+  padding: 1px;
+  text-align: center;
+  margin: 3px auto;
+}
+
+#hotkey-i {
+  margin: 13px auto;
+}
+
+
+/* CROSSHAIR **********************/
+
 .hidden {
   display: none;
 }
@@ -37,6 +122,8 @@ body {
 .anchor-label.strong {
   fill: rgba(255,255,255,0.7);
 }
+
+/* CHART **********************/
 
 line.buy, line.sell {
   stroke-width: 3px;
@@ -88,3 +175,12 @@ body.hide-tenkan-kijun .tenkan-sen ,
 body.hide-tenkan-kijun .kijun-sen {
   display: none;
 }
+
+body.hide-chikou .chikou-span {
+  display: none;
+}
+
+.chikou-span {
+  stroke: #25341f;
+}
+

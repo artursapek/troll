@@ -2,11 +2,53 @@
   <head>
     <link rel="stylesheet" href="ui.css" />
     <script type="text/javascript" src="jquery.js"></script>
-    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="d3.js" charset="utf-8"></script>
     <script type="text/javascript" src="candles.js"></script>
   </head>
 
   <body>
-    <div id="loading">loading data</div>
+    <div id="legend">
+      <div id="series">
+        <h2>Series</h2>
+        <div class="legend-line">
+          <div class="legend-line__example example--tenkan-sen"></div>
+          <label>
+            Tenkan-Sen
+          </label>
+        </div>
+        <div class="legend-line">
+          <div class="legend-line__example example--kijun-sen"></div>
+          <label>
+            Kijun-Sen
+          </label>
+        </div>
+        <div class="legend-line">
+          <div class="legend-line__example--kumo"></div>
+          <label>
+            Kumo
+          </label>
+        </div>
+        <div class="legend-line">
+          <div class="legend-line__example example--chikou-span"></div>
+          <label>
+            Chikou-Span
+          </label>
+        </div>
+        <div class="legend-line">
+          <div class="legend-line__example example--parabolic-sar"></div>
+          <label>
+            Parabolic SAR
+          </label>
+        </div>
+      </div>
+      <div id="hotkeys">
+        <h2>Hotkeys</h2>
+        <div class="hotkey" id="hotkey-i">I</div>
+        <div class="hotkey" id="hotkey-k">K</div>
+        <div class="hotkey" id="hotkey-c">C</div>
+        <div class="hotkey" id="hotkey-s">S</div>
+      </div>
+    </div>
+    <div id="loading">loading data. press "L" to toggle legend</div>
   </body>
 </html>

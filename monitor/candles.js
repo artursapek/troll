@@ -99,7 +99,7 @@
       .attr('height', 1)
 
     var kumoGenerator = d3.svg.area()
-      .x(function (c) { return x(c.Time.Close) })
+      .x(function (c) { return x(c.Time.Close + (60 * 60 * 2 * 11)) })
       .y0(function (c) { return h - y(c.Ichimoku.SenkouSpanA) })
       .y1(function (c) { return h - y(c.Ichimoku.SenkouSpanB) })
 
@@ -107,9 +107,10 @@
       .attr('d', kumoGenerator(candles))
       .attr('class', 'kumo')
 
-    function drawLine(getter, className) {
+    function drawLine(getter, className, xOffset) {
+      xOffset = xOffset || 0;
       var generator = d3.svg.line()
-        .x(function (c) { return x(c.Time.Close) })
+        .x(function (c) { return x(c.Time.Close + xOffset) })
         .y(function (c) { return h - y(getter(c)) })
 
       svg.append('path')
@@ -127,10 +128,11 @@
       }
     }
 
-    drawLine(function (c) { return c.Ichimoku.SenkouSpanA }, 'senkou-span-a')
-    drawLine(function (c) { return c.Ichimoku.SenkouSpanB }, 'senkou-span-b')
+    drawLine(function (c) { return c.Ichimoku.SenkouSpanA }, 'senkou-span-a', (60 * 60 * 2 * 11))
+    drawLine(function (c) { return c.Ichimoku.SenkouSpanB }, 'senkou-span-b', (60 * 60 * 2 * 11))
     drawLine(function (c) { return c.Ichimoku.TenkanSen }, 'tenkan-sen')
     drawLine(function (c) { return c.Ichimoku.KijunSen }, 'kijun-sen')
+    drawLine(function (c) { return c.CandleStick.Close }, 'chikou-span', -(60 * 60 * 2 * 11))
 
     // draw the CANDLES
 
@@ -251,6 +253,12 @@
         break;
       case 73: // I
         $body.toggleClass('hide-tenkan-kijun');
+        break;
+      case 67: // C
+        $body.toggleClass('hide-chikou');
+        break;
+      case 76: // C
+        $body.toggleClass('hide-legend');
         break;
     }
   });
