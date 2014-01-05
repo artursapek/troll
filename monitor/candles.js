@@ -147,7 +147,7 @@
     drawLine(function (c) { return c.Ichimoku.TenkanSen }, 'tenkan-sen')
     drawLine(function (c) { return c.Ichimoku.KijunSen }, 'kijun-sen')
 
-    
+
     $(document).mousemove(function (e) {
       var x = e.pageX;
       x -= (x % 5);
@@ -157,15 +157,24 @@
         , selectedTime = $selectedCandleElem.attr('data-timestamp')
         , selectedCandle = candles.filter(function (can) { return can.Time.Close == selectedTime })[0]
 
-      crosshairLabelPrice
-        .attr('x', x + 10)
-        .text('$' + selectedCandle.CandleStick.Close.toFixed(3))
-        ;
-      var date = new Date(parseInt(selectedTime, 10) * 1000);
+      if (selectedCandle) {
 
-      crosshairLabelTime
-        .attr('x', x + 10)
-        .text(date.toDateString() + ' ' + date.getHours() + ':00')
+        crosshairLabelPrice
+          .attr('x', x + 10)
+          .attr('class', 'anchor-label')
+          .text('$' + selectedCandle.CandleStick.Close.toFixed(3))
+          ;
+        var date = new Date(parseInt(selectedTime, 10) * 1000);
+
+        crosshairLabelTime
+          .attr('x', x + 10)
+          .attr('class', 'anchor-label')
+          .text(date.toDateString() + ' ' + date.getHours() + ':00')
+
+      } else {
+        crosshairLabelPrice.attr('class', 'hidden')
+        crosshairLabelTime.attr('class', 'hidden')
+      }
     });
 
     $.getJSON(HOST + '/trades.json', markTrades);
