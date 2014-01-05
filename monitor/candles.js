@@ -12,7 +12,7 @@
 
   var green = '#ffffff', red = '#c51c1c', span = '#56595d', crosshair = '#1f2021';
 
-  var HOST = 'http://' + window.location.hostname + ':8000'
+  var HOST = 'http://' + window.location.hostname + ':8001'
 
   $.getJSON(HOST + '/prices.json', drawCandles);
 
