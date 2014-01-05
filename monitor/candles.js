@@ -54,7 +54,7 @@
       .attr('x1', 100)
       .attr('x2', 100)
       .attr('y1', 0)
-      .attr('y2', w * 10)
+      .attr('y2', h)
       .attr('stroke', crosshair)
       .attr('stroke-width', '3')
 
