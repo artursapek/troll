@@ -11,9 +11,15 @@ body {
 }
 
 .anchor-label {
-  fill: rgba(255,255,255,0.6);
-  font-family: Arial;
-  font-size: 12px;
+  fill: rgba(255,255,255,0.5);
+  font-family: Minecraftia;
+  font-size: 8px;
+  font-smooth: never;
+  -webkit-font-smoothing : none;
+}
+
+.anchor-label.strong {
+  fill: rgba(255,255,255,0.7);
 }
 
 line.buy, line.sell {
