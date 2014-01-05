@@ -61,7 +61,7 @@
     var crosshairLabelPrice = svg.append('text')
       .attr('x', 0)
       .attr('y', 45)
-      .attr('class', 'anchor-label')
+      .attr('class', 'anchor-label strong')
 
     var crosshairLabelTime = svg.append('text')
       .attr('x', 0)
@@ -161,13 +161,13 @@
 
         crosshairLabelPrice
           .attr('x', x + 10)
-          .attr('class', 'anchor-label')
           .attr('class', 'anchor-label strong')
           .text('$' + selectedCandle.CandleStick.Close.toFixed(3))
           ;
         var date = new Date(parseInt(selectedTime, 10) * 1000);
 
         crosshairLabelTime
+          .attr('class', 'anchor-label')
           .attr('x', x + 10)
           .text(date.toDateString() + ' ' + date.getHours() + ':00')
 
