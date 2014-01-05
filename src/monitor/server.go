@@ -11,7 +11,8 @@ import (
 
 func intervalsHandler(rw http.ResponseWriter, req *http.Request) {
   var intervals market.MarketIntervals
-  data.Intervals.Find(nil).All(&intervals)
+  // Give them 3 mos
+  data.Intervals.Find(nil).Sort("-time.close").Limit(12 * 31 * 3).All(&intervals)
   body, err := json.Marshal(intervals)
   if err != nil {
     panic(err)
