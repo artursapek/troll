@@ -17,6 +17,10 @@
   $.getJSON(HOST + '/prices.json', drawCandles);
 
   function drawCandles(candles) {
+    candles = candles.filter(function (c) {
+      return c.CandleStick.Close > 0
+    });
+
     //candles = candles.slice(1000)
     w = candles.length * 5
 
