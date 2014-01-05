@@ -18,7 +18,7 @@
 
   function drawCandles(candles) {
     //candles = candles.slice(1000)
-    w = candles.length * 5
+    w = Math.max(window.innerWidth, candles.length * 5)
 
     candles = candles.sort(function (a, b) {
       if (a.Time.Close < b.Time.Close) {
