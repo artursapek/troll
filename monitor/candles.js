@@ -18,7 +18,7 @@
 
   function drawCandles(candles) {
     //candles = candles.slice(1000)
-    w = Math.max(window.innerWidth, candles.length * 5)
+    w = candles.length * 5
 
     candles = candles.sort(function (a, b) {
       if (a.Time.Close < b.Time.Close) {
@@ -38,7 +38,7 @@
     svg = d3.select('body')
       .append('svg')
       .attr('shape-rendering', 'crispEdges')
-      .attr('width', w + 5)
+      .attr('width', Math.max(w + 5, window.innerWidth))
       .attr('height', h)
 
     x = d3.scale.linear()
