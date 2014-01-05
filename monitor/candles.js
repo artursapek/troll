@@ -38,7 +38,7 @@
     svg = d3.select('body')
       .append('svg')
       .attr('shape-rendering', 'crispEdges')
-      .attr('width', Math.max(w + 5, window.innerWidth + 5))
+      .attr('width', Math.max(w + 5, window.innerWidth))
       .attr('height', h)
 
     x = d3.scale.linear()
@@ -75,7 +75,7 @@
       .attr('height', function (c) {
         return (y(c.CandleStick.High) - y(c.CandleStick.Low))
       })
-      .attr('x', function (c) { return x(c.Time.Close) + 1; })
+      .attr('x', function (c) { return roundToFive(x(c.Time.Close)) + 1; })
       .attr('y', function (c) { return h - y(c.CandleStick.High)})
       .attr('fill', span)
       ;
@@ -89,7 +89,7 @@
         return Math.abs(y(c.CandleStick.Open) - y(c.CandleStick.Close))
       })
       .attr('x', function (c) {
-        return Math.round(x(c.Time.Close));
+        return roundToFive(Math.round(x(c.Time.Close)));
       })
       //.attr('data-range-x', function (c) { return x(c.Time.Close); })
       .attr('data-timestamp', function (c) { return c.Time.Close })
@@ -105,7 +105,7 @@
     SARAttrs = SAR
       .attr('class', 'sar')
       .attr('x', function (c) {
-        return x(c.Time.Close) + 1
+        return roundToFive(x(c.Time.Close)) + 1
       })
       .attr('y', function (c) {
         return h - Math.round(y(c.SAR.Value))
@@ -131,6 +131,15 @@
         .attr('class', className)
         .attr('fill', 'none')
         .attr('d', generator(candles))
+    }
+
+    function roundToFive(n) {
+      var off = n % 5
+      if (off <= 2) {
+        return n - off
+      } else {
+        return n + (5 - off)
+      }
     }
 
     drawLine(function (c) { return c.Ichimoku.SenkouSpanA }, 'senkou-span-a')
