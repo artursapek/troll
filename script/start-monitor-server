@@ -1,4 +1,5 @@
 #!/bin/bash
 
+./troll http -live >> log/monitor-backend-server.log &
 cd monitor
 python -m SimpleHTTPServer 3333 >> ../log/monitor-server.log &
