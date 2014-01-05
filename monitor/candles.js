@@ -12,7 +12,7 @@
 
   var green = '#ffffff', red = '#c51c1c', span = '#56595d', crosshair = '#1f2021';
 
-  $.getJSON('http://localhost:8080/prices.json', drawCandles);
+  $.getJSON('http://localhost:8000/prices.json', drawCandles);
 
   function drawCandles(candles) {
     //candles = candles.slice(1000)

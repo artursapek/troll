@@ -31,5 +31,5 @@ func tradesHandler(rw http.ResponseWriter, req *http.Request) {
 func StartServer() {
   http.HandleFunc("/prices.json", intervalsHandler)
   http.HandleFunc("/trades.json", tradesHandler)
-  http.ListenAndServe(":8080", nil)
+  http.ListenAndServe(":8000", nil)
 }
