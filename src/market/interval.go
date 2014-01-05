@@ -31,6 +31,9 @@ func RecordInterval(openTime int64) (interval MarketInterval) {
   interval.Time.Close = closeTime
   interval.CandleStick = createCandleStick(prices)
 
+  if interval.CandleStick.Close == 0 {
+    return interval // Dont record empty intervals
+  }
 
   interval = AnalyzeInterval(interval)
 
