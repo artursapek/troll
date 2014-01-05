@@ -14,7 +14,7 @@ func intervalsHandler(rw http.ResponseWriter, req *http.Request) {
   data.Intervals.Find(nil).All(&intervals)
   body, err := json.Marshal(intervals)
   if err != nil {
-    fmt.Fprintf(rw, err)
+    panic(err)
   } else {
     rw.Header().Set("Access-Control-Allow-Origin", "*")
     rw.Header().Set("Content-Type", "application/json")
