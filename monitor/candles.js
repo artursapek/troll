@@ -1,6 +1,7 @@
 (function () {
   var  w
-     , h = innerHeight
+    , brushHeight = 80
+    , h = innerHeight - brushHeight
      ;
 
   var padding = {
@@ -21,7 +22,6 @@
       return c.CandleStick.Close > 0
     });
 
-    //candles = candles.slice(1000)
     w = candles.length * 5
 
     candles = candles.sort(function (a, b) {
@@ -39,15 +39,17 @@
       return Math.max(a, c.CandleStick.High, c.CandleStick.Close, c.CandleStick.Open);
     }, 0);
 
+    ww = w + 5
+
     svg = d3.select('body')
       .append('svg')
       .attr('shape-rendering', 'crispEdges')
-      .attr('width', Math.max(w + 5, window.innerWidth))
+      .attr('width', Math.max(ww + innerWidth / 3, window.innerWidth))
       .attr('height', h)
 
     x = d3.scale.linear()
       .domain(d3.extent(candles, function (c) { return c.Time.Close }))
-      .range([0, w + 5])
+      .range([0, ww])
 
     y = d3.scale
       .linear()
@@ -154,6 +156,28 @@
       ;
 
 
+    function orientCrosshairText(dir, x) {
+      var offset = 10;
+      switch (dir) {
+      case "left":
+        crosshairLabelPrice
+          .attr('x', x - offset)
+          .attr('text-anchor', 'end')
+        crosshairLabelTime
+          .attr('x', x - offset)
+          .attr('text-anchor', 'end')
+        break;
+
+      case "right":
+        crosshairLabelPrice
+          .attr('x', x + offset)
+          .attr('text-anchor', 'start')
+        crosshairLabelTime
+          .attr('x', x + offset)
+          .attr('text-anchor', 'start')
+        break;
+      }
+    }
 
     $(document).mousemove(function (e) {
       var x = roundToFive(e.pageX);
@@ -165,8 +189,10 @@
 
       if (selectedCandle) {
 
+        dir = (e.clientX > (innerWidth / 2)) ? 'left' : 'right'
+        orientCrosshairText(dir, x)
+
         crosshairLabelPrice
-          .attr('x', x + 10)
           .attr('class', 'anchor-label strong')
           .text('$' + selectedCandle.CandleStick.Close.toFixed(3))
           ;
@@ -174,7 +200,6 @@
 
         crosshairLabelTime
           .attr('class', 'anchor-label')
-          .attr('x', x + 10)
           .text(date.toDateString() + ' ' + date.getHours() + ':00')
 
       } else {
@@ -183,7 +208,9 @@
       }
     });
 
-    $.getJSON(HOST + '/trades.json', markTrades);
+    //$.getJSON(HOST + '/trades.json', markTrades);
+
+    window.scrollTo(ww * 2, 0)
   }
 
   function markTrades(trades) {
