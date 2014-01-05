@@ -72,37 +72,6 @@
       .attr('y', 30)
       .attr('class', 'anchor-label')
 
-    var minMax = svg.selectAll('rect.high-low').data(candles).enter().append('rect')
-    var minMaxAttrs = minMax
-      .attr('class', 'high-low')
-      .attr('width', '1px')
-      .attr('height', function (c) {
-        return (y(c.CandleStick.High) - y(c.CandleStick.Low))
-      })
-      .attr('x', function (c) { return roundToFive(x(c.Time.Close)) + 1; })
-      .attr('y', function (c) { return h - y(c.CandleStick.High)})
-      .attr('fill', span)
-      ;
-
-    var openClose = svg.selectAll('rect.open-close').data(candles).enter().append('rect')
-
-    var candleAttrs = openClose
-      .attr('class', 'open-close')
-      .attr('width', '2px')
-      .attr('height', function (c) {
-        return Math.abs(y(c.CandleStick.Open) - y(c.CandleStick.Close))
-      })
-      .attr('x', function (c) {
-        return roundToFive(Math.round(x(c.Time.Close)));
-      })
-      //.attr('data-range-x', function (c) { return x(c.Time.Close); })
-      .attr('data-timestamp', function (c) { return c.Time.Close })
-      .attr('y', function (c) { return h - (y(Math.max(c.CandleStick.Close,c.CandleStick.Open))) })
-      .attr('fill', '#171718')
-      .attr('strokeWidth', '1')
-      .attr('stroke', function (c) { return c.CandleStick.Close > c.CandleStick.Open ? green : red })
-      ;
-
     // Draw SAR
     var SAR = svg.selectAll('rect.sar').data(candles).enter().append('rect')
 
@@ -150,6 +119,40 @@
     drawLine(function (c) { return c.Ichimoku.SenkouSpanB }, 'senkou-span-b')
     drawLine(function (c) { return c.Ichimoku.TenkanSen }, 'tenkan-sen')
     drawLine(function (c) { return c.Ichimoku.KijunSen }, 'kijun-sen')
+
+    // draw the CANDLES
+
+    var minMax = svg.selectAll('rect.high-low').data(candles).enter().append('rect')
+    var minMaxAttrs = minMax
+      .attr('class', 'high-low')
+      .attr('width', '1px')
+      .attr('height', function (c) {
+        return (y(c.CandleStick.High) - y(c.CandleStick.Low))
+      })
+      .attr('x', function (c) { return roundToFive(x(c.Time.Close)) + 1; })
+      .attr('y', function (c) { return h - y(c.CandleStick.High)})
+      .attr('fill', span)
+      ;
+
+    var openClose = svg.selectAll('rect.open-close').data(candles).enter().append('rect')
+
+    var candleAttrs = openClose
+      .attr('class', 'open-close')
+      .attr('width', '2px')
+      .attr('height', function (c) {
+        return Math.abs(y(c.CandleStick.Open) - y(c.CandleStick.Close))
+      })
+      .attr('x', function (c) {
+        return roundToFive(Math.round(x(c.Time.Close)));
+      })
+      //.attr('data-range-x', function (c) { return x(c.Time.Close); })
+      .attr('data-timestamp', function (c) { return c.Time.Close })
+      .attr('y', function (c) { return h - (y(Math.max(c.CandleStick.Close,c.CandleStick.Open))) })
+      .attr('fill', '#171718')
+      .attr('strokeWidth', '1')
+      .attr('stroke', function (c) { return c.CandleStick.Close > c.CandleStick.Open ? green : red })
+      ;
+
 
 
     $(document).mousemove(function (e) {
