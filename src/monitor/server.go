@@ -12,10 +12,14 @@ import (
 func intervalsHandler(rw http.ResponseWriter, req *http.Request) {
   var intervals market.MarketIntervals
   data.Intervals.Find(nil).All(&intervals)
-  body, _ := json.Marshal(intervals)
-  rw.Header().Set("Access-Control-Allow-Origin", "*")
-  rw.Header().Set("Content-Type", "application/json")
-  fmt.Fprintf(rw, string(body))
+  body, err := json.Marshal(intervals)
+  if err != nil {
+    fmt.Fprintf(rw, err)
+  } else {
+    rw.Header().Set("Access-Control-Allow-Origin", "*")
+    rw.Header().Set("Content-Type", "application/json")
+    fmt.Fprintf(rw, string(body))
+  }
 }
 
 func tradesHandler(rw http.ResponseWriter, req *http.Request) {
