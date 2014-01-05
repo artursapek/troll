@@ -149,9 +149,8 @@
 
 
     $(document).mousemove(function (e) {
-      var x = e.pageX;
-      x -= (x % 5);
-      crosshairY.attr('x1', x).attr('x2', x)
+      var x = roundToFive(e.pageX);
+      crosshairY.attr('x1', x + 1).attr('x2', x + 1)
 
       var $selectedCandleElem = $('rect.open-close[x="'+ (x) +'"]')
         , selectedTime = $selectedCandleElem.attr('data-timestamp')
