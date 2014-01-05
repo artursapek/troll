@@ -48,10 +48,6 @@ func RoundUpToNearestInterval(timestamp int64, timeInterval time.Duration) int64
     tRounded += int64(timeInterval)
   }
 
-  if tRounded%2 == 1 {
-    tRounded += 1
-  }
-
   return tRounded
 }
 
