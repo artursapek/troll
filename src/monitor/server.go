@@ -7,12 +7,35 @@ import (
   "market"
   "encoding/json"
   "btce"
+  "time"
 )
 
+var cachedIntervals market.MarketIntervals
+var cacheExpiration int64
+
+func getIntervals() market.MarketIntervals {
+  now := time.Now().Unix()
+
+  fmt.Println(now, cacheExpiration)
+
+  if now > cacheExpiration {
+    // Cache is invalid. Run the query again.
+    // Initially cacheExpiration will be 0,
+    // so this will always run the first time
+    var intervals market.MarketIntervals
+    data.Intervals.Find(nil).Sort("-time.close").All(&intervals)
+    cacheExpiration = intervals[0].Time.Close + 60 * 60 * 2 // Reset the expiration time
+    cachedIntervals = intervals
+    fmt.Println("Ran interval query")
+    return intervals
+  } else {
+    fmt.Println("Used cached intervals")
+    return cachedIntervals
+  }
+}
+
 func intervalsHandler(rw http.ResponseWriter, req *http.Request) {
-  var intervals market.MarketIntervals
-  // Give them 3 mos
-  data.Intervals.Find(nil).Sort("-time.close").Limit(12 * 31 * 3).All(&intervals)
+  intervals := getIntervals()
   body, err := json.Marshal(intervals)
   if err != nil {
     panic(err)
@@ -34,6 +57,7 @@ func tradesHandler(rw http.ResponseWriter, req *http.Request) {
 }
 
 func StartServer() {
+  getIntervals() // Cache them for the first time
   http.HandleFunc("/prices.json", intervalsHandler)
   http.HandleFunc("/trades.json", tradesHandler)
   http.ListenAndServe(":8001", nil)

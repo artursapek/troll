@@ -223,8 +223,8 @@
     }
 
     function visibleCandles() {
-      var start = Math.round(window.scrollX / 5) - 22
-        , amt   = Math.round(window.innerWidth / 5) + 22
+      var start = Math.round(window.scrollX / 5) - 11
+        , amt   = Math.round(window.innerWidth / 5) + 11
       return candles.slice(start, start + amt);
     }
 
