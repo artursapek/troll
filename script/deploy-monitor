@@ -1,0 +1,4 @@
+rm -rf /var/www/monitor
+mkdir /var/www/monitor
+cp monitor/* /var/www/monitor/
+nginx restart
