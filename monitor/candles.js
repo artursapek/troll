@@ -15,6 +15,16 @@
 
   var HOST = 'http://' + window.location.hostname + ':8001'
 
+  function roundToFive(n) {
+    var off = n % 5
+    if (off <= 2) {
+      return n - off
+    } else {
+      return n + (5 - off)
+    }
+  }
+
+
   $.ajax({
     type: 'get',
     datatype: 'json',
@@ -64,7 +74,7 @@
     y = d3.scale
       .linear()
       .domain([minPrice - padding.y, maxPrice + padding.y])
-      .range([0, h])
+      .range([0 - padding.y, h + padding.y])
 
     var crosshairY = svg.append('line')
       .attr('x1', 100)
@@ -83,89 +93,93 @@
       .attr('x', 0)
       .attr('y', 30)
       .attr('class', 'anchor-label')
-
-    // Draw SAR
-    var SAR = svg.selectAll('rect.sar').data(candles).enter().append('rect')
-
-    SARAttrs = SAR
-      .attr('class', 'sar')
-      .attr('x', function (c) {
-        return roundToFive(x(c.Time.Close)) + 1
-      })
-      .attr('y', function (c) {
-        return h - Math.round(y(c.SAR.Value))
-      })
-      .attr('width', 1)
-      .attr('height', 1)
-
-    var kumoGenerator = d3.svg.area()
-      .x(function (c) { return x(c.Time.Close + (60 * 60 * 2 * 11)) })
-      .y0(function (c) { return h - y(c.Ichimoku.SenkouSpanA) })
-      .y1(function (c) { return h - y(c.Ichimoku.SenkouSpanB) })
-
-    var kumo = svg.append('path')
-      .attr('d', kumoGenerator(candles))
-      .attr('class', 'kumo')
-
-    function drawLine(getter, className, xOffset) {
-      xOffset = xOffset || 0;
-      var generator = d3.svg.line()
-        .x(function (c) { return x(c.Time.Close + xOffset) })
-        .y(function (c) { return h - y(getter(c)) })
-
-      svg.append('path')
-        .attr('class', className)
-        .attr('fill', 'none')
-        .attr('d', generator(candles))
-    }
-
-    function roundToFive(n) {
-      var off = n % 5
-      if (off <= 2) {
-        return n - off
-      } else {
-        return n + (5 - off)
-      }
-    }
-
-    drawLine(function (c) { return c.Ichimoku.SenkouSpanA }, 'senkou-span-a', (60 * 60 * 2 * 11))
-    drawLine(function (c) { return c.Ichimoku.SenkouSpanB }, 'senkou-span-b', (60 * 60 * 2 * 11))
-    drawLine(function (c) { return c.Ichimoku.TenkanSen }, 'tenkan-sen')
-    drawLine(function (c) { return c.Ichimoku.KijunSen }, 'kijun-sen')
-    drawLine(function (c) { return c.CandleStick.Close }, 'chikou-span', -(60 * 60 * 2 * 11))
-
     // draw the CANDLES
 
-    var minMax = svg.selectAll('rect.high-low').data(candles).enter().append('rect')
-    var minMaxAttrs = minMax
-      .attr('class', 'high-low')
-      .attr('width', '1px')
-      .attr('height', function (c) {
-        return (y(c.CandleStick.High) - y(c.CandleStick.Low))
-      })
-      .attr('x', function (c) { return roundToFive(x(c.Time.Close)) + 1; })
-      .attr('y', function (c) { return h - y(c.CandleStick.High)})
-      .attr('fill', span)
-      ;
+    function clearCandles() {
+      svg.selectAll('rect.high-low').data([]).exit().remove()
+      svg.selectAll('rect.open-close').data([]).exit().remove()
+      svg.selectAll('rect.sar').data([]).exit().remove()
+      svg.selectAll('path.kumo').data([]).exit().remove()
+    }
 
-    var openClose = svg.selectAll('rect.open-close').data(candles).enter().append('rect')
+    function draw(cs, yaxis) {
+      clearCandles()
 
-    var candleAttrs = openClose
-      .attr('class', 'open-close')
-      .attr('width', '2px')
-      .attr('height', function (c) {
-        return Math.abs(y(c.CandleStick.Open) - y(c.CandleStick.Close))
-      })
-      .attr('x', function (c) {
-        return roundToFive(Math.round(x(c.Time.Close)));
-      })
-      //.attr('data-range-x', function (c) { return x(c.Time.Close); })
-      .attr('data-timestamp', function (c) { return c.Time.Close })
-      .attr('y', function (c) { return h - (y(Math.max(c.CandleStick.Close,c.CandleStick.Open))) })
-      .attr('fill', '#171718')
-      .attr('strokeWidth', '1')
-      .attr('stroke', function (c) { return c.CandleStick.Close > c.CandleStick.Open ? green : red })
-      ;
+      var minMax = svg.selectAll('rect.high-low').data(cs).enter().append('rect')
+      var minMaxAttrs = minMax
+        .attr('class', 'high-low')
+        .attr('width', '1px')
+        .attr('height', function (c) {
+          return (yaxis(c.CandleStick.High) - yaxis(c.CandleStick.Low))
+        })
+        .attr('x', function (c) { return roundToFive(x(c.Time.Close)) + 1; })
+        .attr('y', function (c) { return h - yaxis(c.CandleStick.High)})
+        .attr('fill', span)
+        ;
+
+      var openClose = svg.selectAll('rect.open-close').data(cs).enter().append('rect')
+
+      var candleAttrs = openClose
+        .attr('class', 'open-close')
+        .attr('width', '2px')
+        .attr('height', function (c) {
+          return Math.abs(yaxis(c.CandleStick.Open) - yaxis(c.CandleStick.Close))
+        })
+        .attr('x', function (c) {
+          return roundToFive(Math.round(x(c.Time.Close)));
+        })
+        //.attr('data-range-x', function (c) { return x(c.Time.Close); })
+        .attr('data-timestamp', function (c) { return c.Time.Close })
+        .attr('y', function (c) { return h - (yaxis(Math.max(c.CandleStick.Close,c.CandleStick.Open))) })
+        .attr('fill', '#171718')
+        .attr('strokeWidth', '1')
+        .attr('stroke', function (c) { return c.CandleStick.Close > c.CandleStick.Open ? green : red })
+        ;
+
+
+      // Draw SAR
+      var SAR = svg.selectAll('rect.sar').data(cs).enter().append('rect')
+
+      SARAttrs = SAR
+        .attr('class', 'sar')
+        .attr('x', function (c) {
+          return roundToFive(x(c.Time.Close)) + 1
+        })
+        .attr('y', function (c) {
+          return h - Math.round(yaxis(c.SAR.Value))
+        })
+        .attr('width', 1)
+        .attr('height', 1)
+
+      var kumoGenerator = d3.svg.area()
+        .x(function (c) { return x(c.Time.Close + (60 * 60 * 2 * 11)) })
+        .y0(function (c) { return h - yaxis(c.Ichimoku.SenkouSpanA) })
+        .y1(function (c) { return h - yaxis(c.Ichimoku.SenkouSpanB) })
+
+      var kumo = svg.append('path')
+        .attr('d', kumoGenerator(cs))
+        .attr('class', 'kumo')
+
+      function drawLine(getter, className, xOffset) {
+        svg.selectAll('path.' + className).data([]).exit().remove()
+        xOffset = xOffset || 0;
+        var generator = d3.svg.line()
+          .x(function (c) { return x(c.Time.Close + xOffset) })
+          .y(function (c) { return h - yaxis(getter(c)) })
+
+        svg.append('path')
+          .attr('class', className)
+          .attr('fill', 'none')
+          .attr('d', generator(cs))
+      }
+
+
+      drawLine(function (c) { return c.Ichimoku.SenkouSpanA }, 'senkou-span-a', (60 * 60 * 2 * 11))
+      drawLine(function (c) { return c.Ichimoku.SenkouSpanB }, 'senkou-span-b', (60 * 60 * 2 * 11))
+      drawLine(function (c) { return c.Ichimoku.TenkanSen }, 'tenkan-sen')
+      drawLine(function (c) { return c.Ichimoku.KijunSen }, 'kijun-sen')
+      drawLine(function (c) { return c.CandleStick.Close }, 'chikou-span', -(60 * 60 * 2 * 11))
+    }
 
 
     function orientCrosshairText(dir, x) {
@@ -190,6 +204,42 @@
         break;
       }
     }
+
+    function visibleCandles() {
+      var start = Math.round(window.scrollX / 5)
+        , amt   = Math.round(window.innerWidth / 5)
+      return candles.slice(start, start + amt);
+    }
+
+    var yRangeCache = {};
+
+    function yRange(cs) {
+      var low = Math.min.apply(Math, cs.map(function (c) { return c.CandleStick.Low }));
+      var high = Math.max.apply(Math, cs.map(function (c) { return c.CandleStick.High }));
+      return d3.scale
+        .linear()
+        .domain([low, high])
+        .range([0 + padding.y, h - padding.y])
+    }
+
+    var drawTimeout;
+
+    $(window).scroll(function () {
+      clearTimeout(drawTimeout)
+      drawTimeout = setTimeout(function () {
+        var cs = visibleCandles()
+        var cacheKey = '' + cs[0].Time.Close + cs[cs.length - 1].Time.Close;
+        var yr;
+        if (yRangeCache[cacheKey] !== undefined) {
+          yr = yRangeCache[cacheKey];
+        } else {
+          var yr = yRange(cs);
+          yRangeCache[cacheKey] = yr;
+        }
+
+        draw(cs, yr);
+      }, 10);
+    });
 
     $(document).mousemove(function (e) {
       var x = roundToFive(e.pageX);
