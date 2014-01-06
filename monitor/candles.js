@@ -11,7 +11,8 @@
 
   var svg, x, y;
 
-  var green = '#ffffff', red = '#c51c1c', span = '#56595d', crosshair = '#1f2021';
+  var green = '#ffffff', red = '#c51c1c', span = '#56595d', crosshairYColor = '#1f2021', crosshairXColor = '#343637';
+
 
   var HOST = 'http://' + window.location.hostname + ':8001'
 
@@ -81,13 +82,25 @@
       .attr('x2', 100)
       .attr('y1', 0)
       .attr('y2', h)
-      .attr('stroke', crosshair)
+      .attr('stroke', crosshairYColor)
       .attr('stroke-width', '3')
+
+    var crosshairX = svg.append('line')
+      .attr('x1', 0)
+      .attr('x2', w * 2)
+      .attr('y1', 0)
+      .attr('y2', 0)
+      .attr('stroke', crosshairXColor)
+      .attr('stroke-width', '1')
 
     var crosshairLabelPrice = svg.append('text')
       .attr('x', 0)
       .attr('y', 45)
       .attr('class', 'anchor-label strong')
+
+    var crosshairXLabelPrice = svg.append('text')
+      .attr('class', 'anchor-label strong')
+      .attr('text-anchor', 'end')
 
     var crosshairLabelTime = svg.append('text')
       .attr('x', 0)
@@ -102,8 +115,12 @@
       svg.selectAll('path.kumo').data([]).exit().remove()
     }
 
+    var lastYAxis;
+
     function draw(cs, yaxis) {
       clearCandles()
+
+      lastYAxis = yaxis;
 
       var minMax = svg.selectAll('rect.high-low').data(cs).enter().append('rect')
       var minMaxAttrs = minMax
@@ -228,6 +245,7 @@
       clearTimeout(drawTimeout)
       drawTimeout = setTimeout(function () {
         var cs = visibleCandles()
+        if (cs.length === 0) return;
         var cacheKey = '' + cs[0].Time.Close + cs[cs.length - 1].Time.Close;
         var yr;
         if (yRangeCache[cacheKey] !== undefined) {
@@ -244,6 +262,24 @@
     $(document).mousemove(function (e) {
       var x = roundToFive(e.pageX);
       crosshairY.attr('x1', x + 1).attr('x2', x + 1)
+
+      crosshairX
+        .attr('y1', e.pageY)
+        .attr('y2', e.pageY)
+
+      if (lastYAxis !== undefined) {
+        lyr = lastYAxis.domain()
+        wir = [padding.y, window.innerHeight - padding.y]
+
+        priceAtXCross = 1 - ( (e.pageY - padding.y) / (window.innerHeight - (padding.y * 2)))
+        priceAtXCross *= (lyr[1] - lyr[0])
+        priceAtXCross += lyr[0]
+
+        crosshairXLabelPrice 
+          .text('$' + priceAtXCross.toFixed(3))
+          .attr('x', window.scrollX + window.innerWidth - 30)
+          .attr('y', e.pageY - 10)
+      }
 
       var $selectedCandleElem = $('rect.open-close[x="'+ (x) +'"]')
         , selectedTime = $selectedCandleElem.attr('data-timestamp')
