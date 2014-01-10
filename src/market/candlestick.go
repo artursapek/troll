@@ -4,13 +4,14 @@ type CandleStick struct {
   Open, Close, High, Low  float32
 }
 
-func createCandleStick(prices []MarketPrice) CandleStick {
+func createCandleStick(prices []MarketPrice, lastClose float32) CandleStick {
 
   var low  float32
   var high float32
   var open, close float32
 
-  amt := len(prices)
+  // Line up open with last close
+  open = lastClose
 
   for i, price := range prices {
     if i == 0 {
@@ -19,9 +20,6 @@ func createCandleStick(prices []MarketPrice) CandleStick {
       // Default to first price, then do the checks
       low = price.Price
       high = price.Price
-
-    } else if i == amt - 1 {
-      open = price.Price
     }
     if price.Price > high {
       high = price.Price
