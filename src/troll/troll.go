@@ -5,7 +5,6 @@ import (
   "market"
   "time"
   "data"
-  "fmt"
 )
 
 const CLR_WHITE  = "\x1b[37;1m"
@@ -58,7 +57,6 @@ func BuildIntervals() {
 
     if isDue {
       market.RecordInterval(lastClose)
-      fmt.Printf(".")
     }
   }
 

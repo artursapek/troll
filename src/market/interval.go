@@ -2,6 +2,7 @@ package market
 
 import (
   "mathutils"
+  "fmt"
   "data"
   "labix.org/v2/mgo/bson"
 )
@@ -35,6 +36,8 @@ func RecordInterval(openTime int64) (interval MarketInterval) {
 
   closeTime := openTime + INTERVAL_PERIOD
   prices := getPricesBetween(openTime, closeTime)
+
+  fmt.Printf("%d ", len(prices))
 
   interval.Time.Open = openTime
   interval.Time.Close = closeTime

@@ -77,7 +77,6 @@ func BuildIntervals() {
 
     if isDue {
       market.RecordInterval(lastClose)
-      fmt.Printf(".")
     }
   }
 }
