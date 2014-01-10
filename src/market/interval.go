@@ -24,24 +24,20 @@ type MarketIntervals []MarketInterval
 
 // Creator
 
-func RecordInterval(openTime int64) (interval MarketInterval) {
-  // This is queried twice when we build an interval... could be optimized
-  var lastClose float32
-  lastInterval := PastNIntervals(1)
-  if len(lastInterval) == 1 {
-    lastClose = lastInterval[0].CandleStick.Close
-  } else {
-    lastClose = 0
-  }
-
+func RecordInterval(openTime int64, lastClosePrice float32) (interval MarketInterval) {
   closeTime := openTime + INTERVAL_PERIOD
   prices := getPricesBetween(openTime, closeTime)
+  return RecordIntervalFromPrices(prices, openTime, lastClosePrice)
+}
 
+func RecordIntervalFromPrices(prices []MarketPrice, openTime int64, lastClosePrice float32) (interval MarketInterval) {
   fmt.Printf("%d ", len(prices))
+
+  closeTime := openTime + INTERVAL_PERIOD
 
   interval.Time.Open = openTime
   interval.Time.Close = closeTime
-  interval.CandleStick = createCandleStick(prices, lastClose)
+  interval.CandleStick = createCandleStick(prices, lastClosePrice)
 
   interval = AnalyzeInterval(interval)
 
@@ -49,6 +45,7 @@ func RecordInterval(openTime int64) (interval MarketInterval) {
   data.Intervals.Insert(&interval)
 
   return interval
+ 
 }
 
 func AnalyzeInterval(interval MarketInterval) MarketInterval {

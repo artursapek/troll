@@ -74,9 +74,10 @@ func BuildIntervals() {
   for _, price := range prices {
 
     lastClose, isDue := market.CheckIfNewIntervalIsDue(price.Time.Local)
+    lastInterval := market.PastNIntervals(1)[0]
 
     if isDue {
-      market.RecordInterval(lastClose)
+      market.RecordInterval(lastClose, lastInterval.CandleStick.Close)
     }
   }
 }

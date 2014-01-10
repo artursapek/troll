@@ -1,6 +1,7 @@
 package troll
 
 import (
+  "fmt"
   "btce"
   "market"
   "time"
@@ -36,9 +37,10 @@ func (self Troll) Perform() time.Duration {
   price := market.RecordPrice()
 
   lastClose, isDue := market.CheckIfNewIntervalIsDue(price.Time.Local)
+  lastInterval := market.PastNIntervals(1)[0]
 
   if isDue {
-    market.RecordInterval(lastClose)
+    market.RecordInterval(lastClose, lastInterval.CandleStick.Close)
     //self.Decide(interval)
   }
 
@@ -48,15 +50,32 @@ func (self Troll) Perform() time.Duration {
 func BuildIntervals() {
   data.Intervals.DropCollection()
 
-  var prices []market.MarketPrice
-  data.Prices.Find(nil).All(&prices)
+  var lastCloseTime int64
+  var lastClosePrice float32
 
-  for _, price := range prices {
+  var lastInterval market.MarketInterval
 
-    lastClose, isDue := market.CheckIfNewIntervalIsDue(price.Time.Local)
+  var prices      []market.MarketPrice
+  var pricesStack []market.MarketPrice
 
-    if isDue {
-      market.RecordInterval(lastClose)
+  data.Prices.Find(nil).Sort("time.local").All(&prices)
+
+  for i, price := range prices {
+
+    if i == 0 {
+      lastCloseTime = price.Time.Local
+      lastClosePrice = price.Price
+    }
+
+    if price.Time.Local - lastCloseTime >= market.INTERVAL_PERIOD {
+      fmt.Println("found new")
+      // Time for a new interval!
+      lastInterval = market.RecordInterval(lastCloseTime, lastClosePrice)
+      lastCloseTime = lastInterval.Time.Close
+      lastClosePrice = lastInterval.CandleStick.Close
+      pricesStack = []market.MarketPrice{}
+    } else {
+      pricesStack = append(pricesStack, price)
     }
   }
 
