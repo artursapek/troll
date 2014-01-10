@@ -43,7 +43,7 @@ func (self Troll) Perform() time.Duration {
     //self.Decide(interval)
   }
 
-  return time.Duration(15)
+  return time.Duration(30)
 }
 
 func BuildIntervals() {
