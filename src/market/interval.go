@@ -1,8 +1,8 @@
 package market
 
 import (
-  "mathutils"
   "fmt"
+  "mathutils"
   "data"
   "labix.org/v2/mgo/bson"
 )
@@ -24,15 +24,17 @@ type MarketIntervals []MarketInterval
 
 // Creator
 
-func RecordInterval(openTime int64, lastClosePrice float32) (interval MarketInterval) {
+func RecordInterval(prevInterval MarketInterval) (interval MarketInterval) {
+  openTime  := prevInterval.Time.Close
   closeTime := openTime + INTERVAL_PERIOD
+
+  lastClosePrice := prevInterval.CandleStick.Close
+
   prices := getPricesBetween(openTime, closeTime)
   return RecordIntervalFromPrices(prices, openTime, lastClosePrice)
 }
 
 func RecordIntervalFromPrices(prices []MarketPrice, openTime int64, lastClosePrice float32) (interval MarketInterval) {
-  fmt.Printf("%d ", len(prices))
-
   closeTime := openTime + INTERVAL_PERIOD
 
   interval.Time.Open = openTime
@@ -44,14 +46,16 @@ func RecordIntervalFromPrices(prices []MarketPrice, openTime int64, lastClosePri
   // Persist to db
   data.Intervals.Insert(&interval)
 
+  fmt.Printf(".")
+
   return interval
  
 }
 
 func AnalyzeInterval(interval MarketInterval) MarketInterval {
    // Calculating the SAR
-  prev := PrevInterval(interval)
-  prevPrev := PrevInterval(prev)
+  prev := interval.Prev()
+  prevPrev := prev.Prev()
   // It comes out sorted by time decrementing
   interval.SAR = CalculateParabolicSAR(interval, prev, prevPrev)
 
@@ -94,7 +98,12 @@ func PastNIntervals(n int) (intervals MarketIntervals) {
   return intervals
 }
 
-func PrevInterval(interval MarketInterval) MarketInterval {
+func LastInterval() MarketInterval {
+  intervalUnpack := PastNIntervals(1)
+  return intervalUnpack[0]
+}
+
+func (interval MarketInterval) Prev() MarketInterval {
   var intervals MarketIntervals
   query := bson.M{ "time.close": bson.M{ "$lt": interval.Time.Close } }
   data.Intervals.Find(query).Sort("-time.close").Limit(1).All(&intervals)

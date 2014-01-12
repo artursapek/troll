@@ -8,12 +8,6 @@ import (
   "data"
 )
 
-const CLR_WHITE  = "\x1b[37;1m"
-const CLR_GREY   = "\x1b[30;1m"
-const CLR_GREEN  = "\x1b[32;1m"
-const CLR_YELLOW = "\x1b[33;1m"
-const CLR_RED    = "\x1b[31;1m"
-
 type Troll struct {
   Live bool
   Funds FundsStatus
@@ -35,50 +29,44 @@ func (self Troll) Setup() { /* noop */ }
 func (self Troll) Perform() time.Duration {
   // Record the current market price
   price := market.RecordPrice()
-
-  lastClose, isDue := market.CheckIfNewIntervalIsDue(price.Time.Local)
-  lastInterval := market.PastNIntervals(1)[0]
-
-  if isDue {
-    market.RecordInterval(lastClose, lastInterval.CandleStick.Close)
-    //self.Decide(interval)
-  }
-
+  self.ProcessPrice(price)
   return time.Duration(30)
 }
 
-func BuildIntervals() {
+// Cache the last interval
+var lastInterval market.MarketInterval
+
+func (self Troll) ProcessPrice(price market.MarketPrice) {
+  if (lastInterval == market.MarketInterval{}) {
+    // Query and cache the last interval's close time if we haven't
+    lastInterval = market.LastInterval()
+  }
+
+  if price.Time.Local - lastInterval.Time.Close >= market.INTERVAL_PERIOD {
+    // Record a new interval if 2 hours has passed and
+    // update the cache
+    lastInterval = market.RecordInterval(lastInterval)
+  }
+}
+
+func RebuildIntervals() {
+  // Rebuild all intervals from the beginning
+  fmt.Println("Dropping intervals...")
   data.Intervals.DropCollection()
 
-  var lastCloseTime int64
-  var lastClosePrice float32
+  self := Troll{}
 
-  var lastInterval market.MarketInterval
-
-  var prices      []market.MarketPrice
-  var pricesStack []market.MarketPrice
+  fmt.Println("Getting prices...")
+  var prices []market.MarketPrice
 
   data.Prices.Find(nil).Sort("time.local").All(&prices)
 
   for i, price := range prices {
-
     if i == 0 {
-      lastCloseTime = price.Time.Local
-      lastClosePrice = price.Price
+      lastInterval.Time.Close = price.Time.Local
     }
 
-    if price.Time.Local - lastCloseTime >= market.INTERVAL_PERIOD {
-      fmt.Println("found new")
-      // Time for a new interval!
-      lastInterval = market.RecordInterval(lastCloseTime, lastClosePrice)
-      lastCloseTime = lastInterval.Time.Close
-      lastClosePrice = lastInterval.CandleStick.Close
-      pricesStack = []market.MarketPrice{}
-    } else {
-      pricesStack = append(pricesStack, price)
-    }
+    self.ProcessPrice(price)
   }
-
 }
-
 

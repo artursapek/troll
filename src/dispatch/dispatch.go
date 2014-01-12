@@ -19,34 +19,20 @@ func Dispatch(command string) {
   // Record new PID for this process
   writePID(command)
 
-  if env.Env == "production" {
-    // PRODUCTION
-    switch command {
-    case "run":
+  switch command {
+  case "run":
+    if env.Prod() {
       troll.Run(troll.Troll{}, time.Duration(15))
-    case "rebuild":
-      troll.BuildIntervals()
-    case "status":
-      troll.LastUpdate()
-    case "http":
-      monitor.StartServer()
-    default:
-      panic(fmt.Sprintf("Unknown command: %s", command))
-    }
-
-  } else {
-    // SIMULATION
-    switch command {
-    case "simtrade":
+    } else {
       simulate.Trade()
-    case "simintervals":
-      simulate.BuildIntervals()
-    case "http":
-      monitor.StartServer()
-    case "status":
-      troll.LastUpdate()
-    default:
-      panic(fmt.Sprintf("Unknown command: %s", command))
     }
+  case "rebuild":
+    troll.RebuildIntervals()
+  case "status":
+    troll.LastUpdate()
+  case "http":
+    monitor.StartServer()
+  default:
+    panic(fmt.Sprintf("Unknown command: %s", command))
   }
 }

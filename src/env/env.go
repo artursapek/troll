@@ -18,3 +18,7 @@ func init() {
     Env = SIMULATION
   }
 }
+
+func Prod() bool {
+  return Env == PRODUCTION
+}

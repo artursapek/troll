@@ -7,6 +7,11 @@ import (
   "market"
 )
 
+const CLR_WHITE  = "\x1b[37;1m"
+const CLR_GREY   = "\x1b[30;1m"
+const CLR_GREEN  = "\x1b[32;1m"
+const CLR_YELLOW = "\x1b[33;1m"
+const CLR_RED    = "\x1b[31;1m"
 
 func (troll Troll) Sell(interval market.MarketInterval) Troll {
   rate := interval.CandleStick.Close - 0.5 // Go 50 cents in to ensure trade is snatched up

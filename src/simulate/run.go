@@ -40,8 +40,6 @@ func parseSkipLimit() {
   }
 }
 
-
-
 func Trade() {
   parseSkipLimit()
   data.Trades.DropCollection()
@@ -63,22 +61,6 @@ func Trade() {
   }
 }
 
-
 func BuildIntervals() {
-  parseSkipLimit()
-  data.Intervals.DropCollection()
 
-  var prices []market.MarketPrice
-  data.Prices.Find(nil).Skip(skip).Limit(limit).All(&prices)
-
-  for _, price := range prices {
-
-    lastClose, isDue := market.CheckIfNewIntervalIsDue(price.Time.Local)
-    lastInterval := market.PastNIntervals(1)[0]
-
-    if isDue {
-      market.RecordInterval(lastClose, lastInterval.CandleStick.Close)
-    }
-  }
 }
-
