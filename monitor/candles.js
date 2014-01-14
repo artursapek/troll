@@ -86,7 +86,7 @@
       .range([0 + padding.y, 0 + padding.y + hRSI])
 
     var RSIGenerator = d3.svg.line()
-      .x(function (c) { return x(c.Time.Close) })
+      .x(function (c) { return x(c.Time.Close) + 2 })
       .y(function (c) { return h - yrRSI(c.RSI) })
 
     var RSIThreshold = 25;
@@ -104,9 +104,6 @@
     RSIGuide(RSIThreshold)
     RSIGuide(100 - RSIThreshold)
     RSIGuide(100)
-
-
-
 
     var crosshairY = svg.append('line')
       .attr('x1', 100)
