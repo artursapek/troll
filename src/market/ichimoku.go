@@ -18,16 +18,18 @@ type Indicators struct {
   ChikouSpan  float32 // Close price from kijunPeriod ago
 }
 
-func CalculateIndicators(interval MarketInterval) (indicators Indicators) {
+func (interval *MarketInterval) CalculateIchimokuIndicators() {
+  var indicators Indicators
   // Hey cuz, get the intervals we need cuz
-  intervals := GetIchimokuIntervalsUntil(interval)
+  intervals := GetIchimokuIntervalsUntil(*interval)
 
   indicators.TenkanSen   = MidPointOfHighLow(intervals, tenkanPeriod)
   indicators.KijunSen    = MidPointOfHighLow(intervals, kijunPeriod)
   indicators.SenkouSpanA = (indicators.KijunSen + indicators.TenkanSen) / 2
   indicators.SenkouSpanB = MidPointOfHighLow(intervals, kijunPeriod * 2)
   indicators.ChikouSpan  = LaggingChikou(intervals)
-  return indicators
+
+  interval.Ichimoku = indicators
 }
 
 func UnpackIchimoku(i Indicators) (float32, float32, float32, float32, float32) {

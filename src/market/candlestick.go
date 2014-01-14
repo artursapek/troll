@@ -4,11 +4,9 @@ type CandleStick struct {
   Open, Close, High, Low  float32
 }
 
-func createCandleStick(prices []MarketPrice, lastClose float32) CandleStick {
+func (interval *MarketInterval) CalculateCandleStick(prices []MarketPrice, lastClose float32) {
 
-  var low  float32
-  var high float32
-  var open, close float32
+  var low, high, open, close float32
 
   // Line up open with last close
   open = lastClose
@@ -29,7 +27,7 @@ func createCandleStick(prices []MarketPrice, lastClose float32) CandleStick {
     }
   }
 
-  return CandleStick{
+  interval.CandleStick = CandleStick{
     Open:  open,
     Close: close,
     High:  high,

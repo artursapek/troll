@@ -45,7 +45,7 @@ func (self Troll) ProcessPrice(price market.MarketPrice) {
   if price.Time.Local - lastInterval.Time.Close >= market.INTERVAL_PERIOD {
     // Record a new interval if 2 hours has passed and
     // update the cache
-    lastInterval = market.RecordInterval(lastInterval)
+    lastInterval = market.RecordIntervalSucceeding(lastInterval)
   }
 }
 

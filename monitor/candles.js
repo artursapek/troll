@@ -2,11 +2,12 @@
   var  w
     , brushHeight = 80
     , h = innerHeight
+    , hRSI = 100
     ;
 
   var padding = {
     x: 0
-  , y: 100
+  , y: 20
   }
 
   var svg, x, y;
@@ -24,7 +25,6 @@
       return n + (5 - off)
     }
   }
-
 
   $.ajax({
     type: 'get',
@@ -68,14 +68,19 @@
       .attr('width', Math.max(ww + innerWidth / 3, window.innerWidth))
       .attr('height', h)
 
+
+    // Draw RSI
+
     x = d3.scale.linear()
       .domain(d3.extent(candles, function (c) { return c.Time.Close }))
       .range([0, ww])
 
-    y = d3.scale
+    yRSI = d3.scale
       .linear()
       .domain([minPrice - padding.y, maxPrice + padding.y])
-      .range([0 - padding.y, h + padding.y])
+      .range([h + (padding.y * 2) + hRSI, h + padding.y])
+
+
 
     var crosshairY = svg.append('line')
       .attr('x1', 100)
@@ -236,8 +241,56 @@
       return d3.scale
         .linear()
         .domain([low, high])
-        .range([0 + padding.y, h - padding.y])
+        .range([0 + padding.y + hRSI + padding.y, h - padding.y])
     }
+
+    // This scale never changes
+    var yrRSI = d3.scale
+      .linear()
+      .domain([0,100])
+      .range([0 + padding.y, 0 + padding.y + hRSI])
+
+    var RSIGenerator = d3.svg.line()
+      .x(function (c) { return x(c.Time.Close) })
+      .y(function (c) { return h - yrRSI(c.RSI) })
+
+    var RSIThreshold = 25;
+
+    function RSIGuide(n) {
+      svg.append('line')
+        .attr('x1', 0)
+        .attr('x2', w)
+        .attr('y1', h - yrRSI(n))
+        .attr('y2', h - yrRSI(n))
+        .attr('class', 'rsi-guide')
+    }
+
+    RSIGuide(0)
+    RSIGuide(RSIThreshold)
+    RSIGuide(100 - RSIThreshold)
+    RSIGuide(100)
+
+    svg.append('path')
+      .attr('fill', 'none')
+      .attr('class', 'rsi')
+      .attr('d', RSIGenerator(candles))
+
+    svg.append('path')
+      .attr('id', 'rsi-dull')
+      .attr('clip-path', 'url(#rsi-inside)')
+      .attr('fill', 'none')
+      .attr('class', 'rsi-dull')
+      .attr('d', RSIGenerator(candles))
+
+
+    svg.append('clipPath')
+      .attr('id', 'rsi-inside')
+    .append('rect')
+      .attr('x', 0)
+      .attr('y', h - 100 - yrRSI(RSIThreshold) + (100 - (RSIThreshold * 2)))
+      .attr('width', w)
+      .attr('height', 100 - (RSIThreshold * 2))
+
 
     var drawTimeout;
 
@@ -255,7 +308,7 @@
           yRangeCache[cacheKey] = yr;
         }
 
-        draw(cs, yr);
+        draw(cs, yr, yrRSI);
       }, 10);
     });
 

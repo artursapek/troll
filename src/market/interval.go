@@ -15,16 +15,16 @@ type MarketInterval struct {
     Close int64
   }
   SAR         ParabolicSAR
+  RSI         float32
   CandleStick CandleStick
   Ichimoku    Indicators
-  Position    string // "long" or "short"
 }
 
 type MarketIntervals []MarketInterval
 
 // Creator
 
-func RecordInterval(prevInterval MarketInterval) (interval MarketInterval) {
+func RecordIntervalSucceeding(prevInterval MarketInterval) (interval MarketInterval) {
   openTime  := prevInterval.Time.Close
   closeTime := openTime + INTERVAL_PERIOD
 
@@ -35,13 +35,12 @@ func RecordInterval(prevInterval MarketInterval) (interval MarketInterval) {
 }
 
 func RecordIntervalFromPrices(prices []MarketPrice, openTime int64, lastClosePrice float32) (interval MarketInterval) {
-  closeTime := openTime + INTERVAL_PERIOD
-
   interval.Time.Open = openTime
-  interval.Time.Close = closeTime
-  interval.CandleStick = createCandleStick(prices, lastClosePrice)
+  interval.Time.Close = openTime + INTERVAL_PERIOD
 
-  interval = AnalyzeInterval(interval)
+  interval.CalculateCandleStick(prices, lastClosePrice)
+
+  interval.Analyze()
 
   // Persist to db
   data.Intervals.Insert(&interval)
@@ -49,20 +48,12 @@ func RecordIntervalFromPrices(prices []MarketPrice, openTime int64, lastClosePri
   fmt.Printf(".")
 
   return interval
- 
 }
 
-func AnalyzeInterval(interval MarketInterval) MarketInterval {
-   // Calculating the SAR
-  prev := interval.Prev()
-  prevPrev := prev.Prev()
-  // It comes out sorted by time decrementing
-  interval.SAR = CalculateParabolicSAR(interval, prev, prevPrev)
-
-  // Calculating the Ichimoku indicators for this interval
-  interval.Ichimoku = CalculateIndicators(interval)
-
-  return interval
+func (interval *MarketInterval) Analyze() {
+  interval.CalculateRSI()
+  interval.CalculateParabolicSAR()
+  interval.CalculateIchimokuIndicators()
 }
 
 func PersistUpdatedInterval(interval MarketInterval) {

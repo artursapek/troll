@@ -145,6 +145,18 @@ body.hide-sar .sar {
   display: none;
 }
 
+.rsi {
+  stroke: #a0b3ba;
+}
+
+.rsi-dull {
+  stroke: #3d4d52;
+}
+
+.rsi-guide {
+  stroke: #1b2224;
+}
+
 .kumo {
   fill: rgba(255,255,255,0.05);
 }

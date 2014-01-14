@@ -54,7 +54,7 @@ func Trade() {
 
   for i := 0; i < amt; i ++ {
     interval := intervals[i]
-    interval = market.AnalyzeInterval(interval)
+    interval.Analyze()
 
     market.PersistUpdatedInterval(interval)
     self = self.Decide(interval)
