@@ -45,6 +45,8 @@
       return c.CandleStick.Close > 0
     });
 
+
+
     w = candles.length * 5
 
     candles = candles.sort(function (a, b) {
@@ -77,10 +79,32 @@
       .domain(d3.extent(candles, function (c) { return c.Time.Close }))
       .range([0, ww])
 
-    yRSI = d3.scale
+    // This scale never changes
+    var yrRSI = d3.scale
       .linear()
-      .domain([minPrice - padding.y, maxPrice + padding.y])
-      .range([h + (padding.y * 2) + hRSI, h + padding.y])
+      .domain([0,100])
+      .range([0 + padding.y, 0 + padding.y + hRSI])
+
+    var RSIGenerator = d3.svg.line()
+      .x(function (c) { return x(c.Time.Close) })
+      .y(function (c) { return h - yrRSI(c.RSI) })
+
+    var RSIThreshold = 25;
+
+    function RSIGuide(n) {
+      svg.append('line')
+        .attr('x1', 0)
+        .attr('x2', w*2)
+        .attr('y1', h - yrRSI(n))
+        .attr('y2', h - yrRSI(n))
+        .attr('class', 'rsi-guide')
+    }
+
+    RSIGuide(0)
+    RSIGuide(RSIThreshold)
+    RSIGuide(100 - RSIThreshold)
+    RSIGuide(100)
+
 
 
 
@@ -113,6 +137,28 @@
       .attr('x', 0)
       .attr('y', 30)
       .attr('class', 'anchor-label')
+
+    svg.append('path')
+      .attr('fill', 'none')
+      .attr('class', 'rsi')
+      .attr('d', RSIGenerator(candles))
+
+    svg.append('path')
+      .attr('id', 'rsi-dull')
+      .attr('clip-path', 'url(#rsi-inside)')
+      .attr('fill', 'none')
+      .attr('class', 'rsi-dull')
+      .attr('d', RSIGenerator(candles))
+
+    svg.append('clipPath')
+      .attr('id', 'rsi-inside')
+    .append('rect')
+      .attr('x', 0)
+      .attr('y', h - 100 - yrRSI(RSIThreshold) + (100 - (RSIThreshold * 2)))
+      .attr('width', w * 2)
+      .attr('height', 100 - (RSIThreshold * 2))
+
+
     // draw the CANDLES
 
     function clearCandles() {
@@ -246,54 +292,6 @@
         .range([0 + padding.y + (RSIShown ? hRSI + padding.y : 0), h - padding.y])
     }
 
-    // This scale never changes
-    var yrRSI = d3.scale
-      .linear()
-      .domain([0,100])
-      .range([0 + padding.y, 0 + padding.y + hRSI])
-
-    var RSIGenerator = d3.svg.line()
-      .x(function (c) { return x(c.Time.Close) })
-      .y(function (c) { return h - yrRSI(c.RSI) })
-
-    var RSIThreshold = 25;
-
-
-    function RSIGuide(n) {
-      svg.append('line')
-        .attr('x1', 0)
-        .attr('x2', w*2)
-        .attr('y1', h - yrRSI(n))
-        .attr('y2', h - yrRSI(n))
-        .attr('class', 'rsi-guide')
-    }
-
-    RSIGuide(0)
-    RSIGuide(RSIThreshold)
-    RSIGuide(100 - RSIThreshold)
-    RSIGuide(100)
-
-    svg.append('path')
-      .attr('fill', 'none')
-      .attr('class', 'rsi')
-      .attr('d', RSIGenerator(candles))
-
-    svg.append('path')
-      .attr('id', 'rsi-dull')
-      .attr('clip-path', 'url(#rsi-inside)')
-      .attr('fill', 'none')
-      .attr('class', 'rsi-dull')
-      .attr('d', RSIGenerator(candles))
-
-
-    svg.append('clipPath')
-      .attr('id', 'rsi-inside')
-    .append('rect')
-      .attr('x', 0)
-      .attr('y', h - 100 - yrRSI(RSIThreshold) + (100 - (RSIThreshold * 2)))
-      .attr('width', w * 2)
-      .attr('height', 100 - (RSIThreshold * 2))
-
 
     var drawTimeout;
 
@@ -339,6 +337,7 @@
           .text('$' + priceAtXCross.toFixed(3))
           .attr('x', window.scrollX + window.innerWidth - 30)
           .attr('y', e.pageY - 10)
+
       }
 
       var $selectedCandleElem = $('rect.open-close[x="'+ (x) +'"]')
