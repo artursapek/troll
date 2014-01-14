@@ -84,6 +84,10 @@ body.hide-legend #legend {
   background: url(data:image/png;base64,R0lGODlhBgABAJEAAAAAAP///3Odsf///yH5BAEAAAMALAAAAAAGAAEAAAID1H4FADs=);
 }
 
+.example--rsi {
+  background: #3d4d52;
+}
+
 label {
   display: inline-block;
   margin: 4px 0 4px 4px;
@@ -155,6 +159,12 @@ body.hide-sar .sar {
 
 .rsi-guide {
   stroke: #1b2224;
+}
+
+body.hide-rsi .rsi,
+body.hide-rsi .rsi-dull,
+body.hide-rsi .rsi-guide {
+  display: none;
 }
 
 .kumo {

@@ -10,6 +10,8 @@
   , y: 20
   }
 
+  var RSIShown = true;
+
   var svg, x, y;
 
   var green = '#ffffff', red = '#c51c1c', span = '#56595d', crosshairYColor = '#1f2021', crosshairXColor = '#343637';
@@ -241,7 +243,7 @@
       return d3.scale
         .linear()
         .domain([low, high])
-        .range([0 + padding.y + hRSI + padding.y, h - padding.y])
+        .range([0 + padding.y + (RSIShown ? hRSI + padding.y : 0), h - padding.y])
     }
 
     // This scale never changes
@@ -255,6 +257,7 @@
       .y(function (c) { return h - yrRSI(c.RSI) })
 
     var RSIThreshold = 25;
+
 
     function RSIGuide(n) {
       svg.append('line')
@@ -294,12 +297,14 @@
 
     var drawTimeout;
 
-    $(window).scroll(function () {
+    $(window).scroll(refresh);
+
+    function refresh () {
       clearTimeout(drawTimeout)
       drawTimeout = setTimeout(function () {
         var cs = visibleCandles()
         if (cs.length === 0) return;
-        var cacheKey = '' + cs[0].Time.Close + cs[cs.length - 1].Time.Close;
+        var cacheKey = '' + cs[0].Time.Close + cs[cs.length - 1].Time.Close + (RSIShown ? 'RSI' : '');
         var yr;
         if (yRangeCache[cacheKey] !== undefined) {
           yr = yRangeCache[cacheKey];
@@ -310,7 +315,9 @@
 
         draw(cs, yr, yrRSI);
       }, 10);
-    });
+    };
+
+    window.refresh = refresh;
 
     $(document).mousemove(function (e) {
       var x = roundToFive(e.pageX);
@@ -396,8 +403,11 @@
       case 67: // C
         $body.toggleClass('hide-chikou');
         break;
-      case 76: // C
-        $body.toggleClass('hide-legend');
+      case 82: // R
+        RSIShown = !RSIShown
+        console.log(RSIShown)
+        refresh()
+        $body.toggleClass('hide-rsi');
         break;
     }
   });
