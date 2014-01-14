@@ -331,7 +331,7 @@
         lyr = lastYAxis.domain()
         wir = [padding.y, window.innerHeight - padding.y]
 
-        priceAtXCross = 1 - ( (e.pageY - padding.y) / (window.innerHeight - (padding.y * 2)))
+        priceAtXCross = 1 - ( (e.pageY - padding.y) / (window.innerHeight - (padding.y * 2) - (RSIShown ? hRSI + padding.y : 0)))
         priceAtXCross *= (lyr[1] - lyr[0])
         priceAtXCross += lyr[0]
 
