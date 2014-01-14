@@ -6,4 +6,3 @@ script/build
 script/run
 script/start-monitor-servers
 script/deploy-monitor
-/etc/init.d/nginx restart
