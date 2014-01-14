@@ -4,3 +4,6 @@ git fetch
 git reset --hard origin/master
 script/build
 script/run
+script/start-monitor-servers
+script/deploy-monitor
+/etc/init.d/nginx restart
