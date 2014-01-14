@@ -259,7 +259,7 @@
     function RSIGuide(n) {
       svg.append('line')
         .attr('x1', 0)
-        .attr('x2', w)
+        .attr('x2', w*2)
         .attr('y1', h - yrRSI(n))
         .attr('y2', h - yrRSI(n))
         .attr('class', 'rsi-guide')
@@ -288,7 +288,7 @@
     .append('rect')
       .attr('x', 0)
       .attr('y', h - 100 - yrRSI(RSIThreshold) + (100 - (RSIThreshold * 2)))
-      .attr('width', w)
+      .attr('width', w * 2)
       .attr('height', 100 - (RSIThreshold * 2))
 
 
