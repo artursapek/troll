@@ -440,9 +440,11 @@
         break;
       case 'prices':
         $body.toggleClass('hide-prices');
+        $('#hotkey-p').toggleClass('inactive');
         break;
       case 'candle-style':
         toggleCandleMode();
+        $('#hotkey-h').toggleClass('inactive');
         refresh();
         break;
       case 'ema-10':
