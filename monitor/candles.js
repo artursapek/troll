@@ -466,7 +466,9 @@
   }
 
   $(document).ready(function () {
-    toggle('keltner')
+    toggle('tenkan-kijun');
+    toggle('chikou');
+    toggle('kumo');
   });
 
 }());
