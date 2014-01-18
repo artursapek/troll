@@ -59,6 +59,15 @@ body.hide-legend #legend {
 }
 
 
+.legend-line__example--keltner {
+  display: inline-block;
+  height: 6px;
+  background: rgba(255,255,255,0.1);
+  border-top: 1px solid #304454;
+  border-bottom: 1px solid #304454;
+  width: 20px;
+}
+
 .legend-line__example--kumo {
   display: inline-block;
   height: 6px;
@@ -68,12 +77,20 @@ body.hide-legend #legend {
   width: 20px;
 }
 
+.example--ema-10 {
+  background: #a3851d;
+}
+
+.example--ema-21 {
+  background: #5c87a8;
+}
+
 .example--tenkan-sen {
   background: #3d5e73;
 }
 
 .example--kijun-sen {
-  background: #502b5a;
+  background: #6e3c7b;
 }
 
 .example--chikou-span {
@@ -100,13 +117,20 @@ label {
 
 .hotkey {
   border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.8);
   width: 14px;
   padding: 1px;
   text-align: center;
   margin: 3px auto;
+  color: black;
 }
 
-#hotkey-i {
+.hotkey.inactive {
+  background: black;
+  color: white;
+}
+
+#hotkey-j {
   margin: 16px auto;
 }
 
@@ -139,6 +163,13 @@ line.buy {
 
 line.sell {
   stroke: rgba(197,28,28,0.3);
+}
+
+/* Indicators */
+
+body.hide-prices .open-close,
+body.hide-prices .high-low {
+  display: none;
 }
 
 .sar {
@@ -190,7 +221,7 @@ body.hide-kumo .senkou-span-b {
 }
 
 .kijun-sen {
-  stroke: #502b5a;
+  stroke: #6e3c7b;
 }
 
 body.hide-tenkan-kijun .tenkan-sen ,
@@ -206,3 +237,34 @@ body.hide-chikou .chikou-span {
   stroke: #25341f;
 }
 
+
+.ema-10 {
+  stroke: #a3851d;
+}
+
+body.hide-ema-10 .ema-10 {
+  display: none;
+}
+
+.ema-21 {
+  stroke: #5c87a8;
+}
+
+body.hide-ema-21 .ema-21 {
+  display: none;
+}
+
+.keltner-upper,
+.keltner-lower {
+  stroke: #304454;
+}
+
+.keltner-inside {
+  fill: rgba(35,51,63,0.2);
+}
+
+body.hide-keltner .keltner-lower,
+body.hide-keltner .keltner-upper,
+body.hide-keltner .keltner-inside {
+  display: none;
+}

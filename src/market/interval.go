@@ -16,6 +16,10 @@ type MarketInterval struct {
   }
   SAR         ParabolicSAR
   RSI         float32
+  TR          float32
+  ATR         float32
+  EMA10       float32
+  EMA21       float32
   CandleStick CandleStick
   Ichimoku    Indicators
 }
@@ -52,6 +56,8 @@ func RecordIntervalFromPrices(prices []MarketPrice, openTime int64, lastClosePri
 
 func (interval *MarketInterval) Analyze() {
   interval.CalculateRSI()
+  interval.CalculateATR()
+  interval.CalculateEMAs()
   interval.CalculateParabolicSAR()
   interval.CalculateIchimokuIndicators()
 }
@@ -87,6 +93,14 @@ func CheckIfNewIntervalIsDue(currentTime int64) (int64, bool) {
 func PastNIntervals(n int) (intervals MarketIntervals) {
   data.Intervals.Find(nil).Sort("-time.close").Limit(n).All(&intervals)
   return intervals
+}
+
+func CountOfIntervalsBefore(interval MarketInterval) int {
+  count, err := data.Intervals.Find(nil).Sort("-time.close").Count()
+  if err != nil {
+    panic(err)
+  }
+  return count
 }
 
 func LastInterval() MarketInterval {

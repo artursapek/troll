@@ -163,6 +163,7 @@
       svg.selectAll('rect.open-close').data([]).exit().remove()
       svg.selectAll('rect.sar').data([]).exit().remove()
       svg.selectAll('path.kumo').data([]).exit().remove()
+      svg.selectAll('path.keltner-inside').data([]).exit().remove()
     }
 
     var lastYAxis;
@@ -171,6 +172,29 @@
       clearCandles()
 
       lastYAxis = yaxis;
+
+      drawLine(function (c) { return c.EMA10 }, 'ema-10')
+      drawLine(function (c) { return c.EMA21 }, 'ema-21')
+      drawLine(function (c) { return c.EMA21 - c.ATR * 2 }, 'keltner-upper')
+      drawLine(function (c) { return c.EMA21 + c.ATR * 2 }, 'keltner-lower')
+
+      var keltnerGenerator = d3.svg.area()
+        .x(function (c) { return x(c.Time.Close) })
+        .y0(function (c) { return h - yaxis(c.EMA21 - c.ATR * 2) })
+        .y1(function (c) { return h - yaxis(c.EMA21 + c.ATR * 2) })
+
+      var keltnerInside = svg.append('path')
+        .attr('d', keltnerGenerator(cs))
+        .attr('class', 'keltner-inside')
+
+
+
+      drawLine(function (c) { return c.Ichimoku.SenkouSpanA }, 'senkou-span-a', (60 * 60 * 2 * 11))
+      drawLine(function (c) { return c.Ichimoku.SenkouSpanB }, 'senkou-span-b', (60 * 60 * 2 * 11))
+      drawLine(function (c) { return c.Ichimoku.TenkanSen }, 'tenkan-sen')
+      drawLine(function (c) { return c.Ichimoku.KijunSen }, 'kijun-sen')
+      drawLine(function (c) { return c.CandleStick.Close }, 'chikou-span', -(60 * 60 * 2 * 11))
+
 
       var minMax = svg.selectAll('rect.high-low').data(cs).enter().append('rect')
       var minMaxAttrs = minMax
@@ -240,12 +264,6 @@
           .attr('d', generator(cs))
       }
 
-
-      drawLine(function (c) { return c.Ichimoku.SenkouSpanA }, 'senkou-span-a', (60 * 60 * 2 * 11))
-      drawLine(function (c) { return c.Ichimoku.SenkouSpanB }, 'senkou-span-b', (60 * 60 * 2 * 11))
-      drawLine(function (c) { return c.Ichimoku.TenkanSen }, 'tenkan-sen')
-      drawLine(function (c) { return c.Ichimoku.KijunSen }, 'kijun-sen')
-      drawLine(function (c) { return c.CandleStick.Close }, 'chikou-span', -(60 * 60 * 2 * 11))
     }
 
 
@@ -385,27 +403,70 @@
   }
 
   $(document).keyup(function (e) {
+    hotkeys = {
+      49: 'ema-10'
+    , 50: 'ema-21'
+    , 67: 'chikou'
+    , 69: 'keltner'
+    , 74: 'tenkan-kijun'
+    , 75: 'kumo'
+    , 76: 'legend'
+    , 80: 'prices'
+    , 82: 'rsi'
+    , 83: 'sar'
+    }
+    toggle(hotkeys[e.which])
+  });
+
+  function toggle(name) {
     var $body = $('body')
-    switch (e.which) {
-      case 75: // K
+    switch (name) {
+      case 'legend':
+        $body.toggleClass('hide-legend');
+        break;
+      case 'prices':
+        $body.toggleClass('hide-prices');
+        break;
+      case 'ema-10':
+        $body.toggleClass('hide-ema-10');
+        $('#hotkey-1').toggleClass('inactive');
+        break;
+      case 'ema-21': // 2
+        $body.toggleClass('hide-ema-21');
+        $('#hotkey-2').toggleClass('inactive');
+        break;
+      case 'kumo': // K
         $body.toggleClass('hide-kumo');
+        $('#hotkey-k').toggleClass('inactive');
         break;
-      case 83: // S
+      case 'sar': // S
         $body.toggleClass('hide-sar');
+        $('#hotkey-s').toggleClass('inactive');
         break;
-      case 73: // I
+      case 'tenkan-kijun': // J
         $body.toggleClass('hide-tenkan-kijun');
+        $('#hotkey-j').toggleClass('inactive');
         break;
-      case 67: // C
+      case 'keltner': // L
+        $body.toggleClass('hide-keltner');
+        $('#hotkey-e').toggleClass('inactive');
+        break;
+      case 'chikou': // C
         $body.toggleClass('hide-chikou');
+        $('#hotkey-c').toggleClass('inactive');
         break;
-      case 82: // R
+      case 'rsi': // R
+        $('#hotkey-r').toggleClass('inactive');
         RSIShown = !RSIShown
         console.log(RSIShown)
         refresh()
         $body.toggleClass('hide-rsi');
         break;
     }
+  }
+
+  $(document).ready(function () {
+    toggle('keltner')
   });
 
 }());
