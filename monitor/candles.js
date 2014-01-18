@@ -175,11 +175,11 @@
 
       drawLine(function (c) { return c.EMA10 }, 'ema-10')
       drawLine(function (c) { return c.EMA21 }, 'ema-21')
-      drawLine(function (c) { return c.EMA21 - c.ATR * 2 }, 'keltner-upper')
-      drawLine(function (c) { return c.EMA21 + c.ATR * 2 }, 'keltner-lower')
+      drawLine(function (c) { return c.EMA21 - c.ATR * 2 }, 'keltner-upper', 0, 2)
+      drawLine(function (c) { return c.EMA21 + c.ATR * 2 }, 'keltner-lower', 0, 2)
 
       var keltnerGenerator = d3.svg.area()
-        .x(function (c) { return x(c.Time.Close) })
+        .x(function (c) { return x(c.Time.Close) + 2 })
         .y0(function (c) { return h - yaxis(c.EMA21 - c.ATR * 2) })
         .y1(function (c) { return h - yaxis(c.EMA21 + c.ATR * 2) })
 
@@ -251,11 +251,12 @@
         .attr('d', kumoGenerator(cs))
         .attr('class', 'kumo')
 
-      function drawLine(getter, className, xOffset) {
+      function drawLine(getter, className, xOffset, xOffsetPx) {
         svg.selectAll('path.' + className).data([]).exit().remove()
         xOffset = xOffset || 0;
+        xOffsetPx = xOffsetPx || 0;
         var generator = d3.svg.line()
-          .x(function (c) { return x(c.Time.Close + xOffset) })
+          .x(function (c) { return x(c.Time.Close + xOffset) + xOffsetPx })
           .y(function (c) { return h - yaxis(getter(c)) })
 
         svg.append('path')
