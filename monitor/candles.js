@@ -16,6 +16,23 @@
 
   var green = '#ffffff', red = '#c51c1c', span = '#56595d', crosshairYColor = '#1f2021', crosshairXColor = '#343637';
 
+  var candleMode = 'normal';
+
+  function toggleCandleMode() {
+    candleMode = {
+      normal: 'heikinAshi'
+    , heikinAshi: 'normal'
+    }[candleMode];
+  }
+
+  function Candle(c) {
+    switch (candleMode) {
+      case 'normal':
+        return c.CandleStick;
+      case 'heikinAshi':
+        return c.HeikinAshi
+    }
+  }
 
   var HOST = 'http://' + window.location.hostname + ':8001'
 
@@ -45,8 +62,6 @@
       return c.CandleStick.Close > 0
     });
 
-
-
     w = candles.length * 5
 
     candles = candles.sort(function (a, b) {
@@ -58,10 +73,10 @@
     })
 
     var minPrice = candles.reduce(function (a, c) {
-      return Math.min(a, c.CandleStick.Low, c.CandleStick.Close, c.CandleStick.Open);
+      return Math.min(a, Candle(c).Low, Candle(c).Close, Candle(c).Open);
     }, 1/0);
     var maxPrice = candles.reduce(function (a, c) {
-      return Math.max(a, c.CandleStick.High, c.CandleStick.Close, c.CandleStick.Open);
+      return Math.max(a, Candle(c).High, Candle(c).Close, Candle(c).Open);
     }, 0);
 
     ww = w + 5
@@ -187,24 +202,21 @@
         .attr('d', keltnerGenerator(cs))
         .attr('class', 'keltner-inside')
 
-
-
       drawLine(function (c) { return c.Ichimoku.SenkouSpanA }, 'senkou-span-a', (60 * 60 * 2 * 11))
       drawLine(function (c) { return c.Ichimoku.SenkouSpanB }, 'senkou-span-b', (60 * 60 * 2 * 11))
       drawLine(function (c) { return c.Ichimoku.TenkanSen }, 'tenkan-sen')
       drawLine(function (c) { return c.Ichimoku.KijunSen }, 'kijun-sen')
       drawLine(function (c) { return c.CandleStick.Close }, 'chikou-span', -(60 * 60 * 2 * 11))
 
-
       var minMax = svg.selectAll('rect.high-low').data(cs).enter().append('rect')
       var minMaxAttrs = minMax
         .attr('class', 'high-low')
         .attr('width', '1px')
         .attr('height', function (c) {
-          return (yaxis(c.CandleStick.High) - yaxis(c.CandleStick.Low))
+          return (yaxis(Candle(c).High) - yaxis(Candle(c).Low))
         })
         .attr('x', function (c) { return roundToFive(x(c.Time.Close)) + 1; })
-        .attr('y', function (c) { return h - yaxis(c.CandleStick.High)})
+        .attr('y', function (c) { return h - yaxis(Candle(c).High)})
         .attr('fill', span)
         ;
 
@@ -214,17 +226,17 @@
         .attr('class', 'open-close')
         .attr('width', '2px')
         .attr('height', function (c) {
-          return Math.abs(yaxis(c.CandleStick.Open) - yaxis(c.CandleStick.Close))
+          return Math.abs(yaxis(Candle(c).Open) - yaxis(Candle(c).Close))
         })
         .attr('x', function (c) {
           return roundToFive(Math.round(x(c.Time.Close)));
         })
         //.attr('data-range-x', function (c) { return x(c.Time.Close); })
         .attr('data-timestamp', function (c) { return c.Time.Close })
-        .attr('y', function (c) { return h - (yaxis(Math.max(c.CandleStick.Close,c.CandleStick.Open))) })
+        .attr('y', function (c) { return h - (yaxis(Math.max(Candle(c).Close,Candle(c).Open))) })
         .attr('fill', '#171718')
         .attr('strokeWidth', '1')
-        .attr('stroke', function (c) { return c.CandleStick.Close > c.CandleStick.Open ? green : red })
+        .attr('stroke', function (c) { return Candle(c).Close > Candle(c).Open ? green : red })
         ;
 
 
@@ -300,8 +312,8 @@
     var yRangeCache = {};
 
     function yRange(cs) {
-      var low = Math.min.apply(Math, cs.map(function (c) { return c.CandleStick.Low }));
-      var high = Math.max.apply(Math, cs.map(function (c) { return c.CandleStick.High }));
+      var low = Math.min.apply(Math, cs.map(function (c) { return Candle(c).Low }));
+      var high = Math.max.apply(Math, cs.map(function (c) { return Candle(c).High }));
       return d3.scale
         .linear()
         .domain([low, high])
@@ -409,6 +421,7 @@
     , 50: 'ema-21'
     , 67: 'chikou'
     , 69: 'keltner'
+    , 72: 'candle-style'
     , 74: 'tenkan-kijun'
     , 75: 'kumo'
     , 76: 'legend'
@@ -427,6 +440,10 @@
         break;
       case 'prices':
         $body.toggleClass('hide-prices');
+        break;
+      case 'candle-style':
+        toggleCandleMode();
+        refresh();
         break;
       case 'ema-10':
         $body.toggleClass('hide-ema-10');

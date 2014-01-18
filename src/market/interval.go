@@ -21,6 +21,7 @@ type MarketInterval struct {
   EMA10       float32
   EMA21       float32
   CandleStick CandleStick
+  HeikinAshi  CandleStick
   Ichimoku    Indicators
 }
 
@@ -55,6 +56,7 @@ func RecordIntervalFromPrices(prices []MarketPrice, openTime int64, lastClosePri
 }
 
 func (interval *MarketInterval) Analyze() {
+  interval.CalculateHeikinAshi()
   interval.CalculateRSI()
   interval.CalculateATR()
   interval.CalculateEMAs()
