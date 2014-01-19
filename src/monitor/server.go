@@ -23,7 +23,8 @@ func getIntervals() market.MarketIntervals {
     // Initially cacheExpiration will be 0,
     // so this will always run the first time
     var intervals market.MarketIntervals
-    data.Intervals.Find(nil).Sort("-time.close").All(&intervals)
+    var limit int = 12 * 30 * 3 // 3 mos
+    data.Intervals.Find(nil).Sort("-time.close").Limit(limit).All(&intervals)
     cacheExpiration = intervals[0].Time.Close + 60 * 60 * 2 // Reset the expiration time
     cachedIntervals = intervals
     fmt.Println("Ran interval query")
