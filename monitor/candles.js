@@ -18,7 +18,6 @@
     , span = '#56595d'
     , crosshairYColor = '#1f2021'
     , crosshairXColor = '#343637'
-    , RSIShown = true;
     ;
 
   var settings = {
@@ -332,7 +331,7 @@
       return d3.scale
         .linear()
         .domain([low, high])
-        .range([0 + padding.y + (RSIShown ? hRSI + padding.y : 0), h - padding.y])
+        .range([0 + padding.y + (settings.rsi ? hRSI + padding.y : 0), h - padding.y])
     }
 
 
@@ -345,7 +344,7 @@
       drawTimeout = setTimeout(function () {
         var cs = visibleCandles()
         if (cs.length === 0) return;
-        var cacheKey = '' + cs[0].Time.Close + cs[cs.length - 1].Time.Close + (RSIShown ? 'RSI' : '');
+        var cacheKey = '' + cs[0].Time.Close + cs[cs.length - 1].Time.Close + (settings.rsi ? 'RSI' : '');
         var yr;
         if (yRangeCache[cacheKey] !== undefined) {
           yr = yRangeCache[cacheKey];
@@ -380,7 +379,7 @@
         lyr = lastYAxis.domain()
         wir = [padding.y, window.innerHeight - padding.y]
 
-        priceAtXCross = 1 - ( (e.pageY - padding.y) / (window.innerHeight - (padding.y * 2) - (RSIShown ? hRSI + padding.y : 0)))
+        priceAtXCross = 1 - ( (e.pageY - padding.y) / (window.innerHeight - (padding.y * 2) - (settings.rsi ? hRSI + padding.y : 0)))
         priceAtXCross *= (lyr[1] - lyr[0])
         priceAtXCross += lyr[0]
 
@@ -497,7 +496,6 @@
         break;
       case 'rsi': // R
         $('#hotkey-r').toggleClass('inactive', !setting);
-        RSIShown = !RSIShown
         refresh()
         $body.toggleClass('hide-rsi', !setting);
         break;
