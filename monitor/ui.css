@@ -109,7 +109,7 @@ body.hide-legend #legend, body.hide-legend #footnote {
 }
 
 .example--chikou-span {
-  background: #25341f;
+  background: #364d2d;
 }
 
 .example--parabolic-sar {
@@ -253,7 +253,7 @@ body.hide-chikou .chikou-span {
 }
 
 .chikou-span {
-  stroke: #25341f;
+  stroke: #364d2d;
 }
 
 
