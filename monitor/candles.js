@@ -30,7 +30,6 @@
       spinnerFrame ++;
     }
     $spinner.text(spinnerFrames[spinnerFrame]);
-    console.log($spinner);
   }, 200);
 
   function toggleCandleMode() {
@@ -494,7 +493,6 @@
       case 'rsi': // R
         $('#hotkey-r').toggleClass('inactive');
         RSIShown = !RSIShown
-        console.log(RSIShown)
         refresh()
         $body.toggleClass('hide-rsi');
         break;
