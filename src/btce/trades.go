@@ -13,10 +13,7 @@ type PublicTrades []PublicTrade
 
 func decodePublicTrades(input []byte) PublicTrades {
   var trades PublicTrades
-  err := json.Unmarshal(input, &trades)
-  if err != nil {
-    panic(err)
-  }
+  json.Unmarshal(input, &trades)
   return trades
 }
 
@@ -26,6 +23,11 @@ func GetPublicTrades() PublicTrades {
 }
 
 func GetLastTrade() PublicTrade {
-  return GetPublicTrades()[0]
+  trades := GetPublicTrades()
+  if len(trades) > 0 {
+    return trades[0]
+  } else {
+    return PublicTrade{}
+  }
 }
 
