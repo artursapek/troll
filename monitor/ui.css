@@ -16,7 +16,13 @@ body {
   font-family: "px";
 }
 
-svg {
+a {
+  color: white;
+  border-bottom: 1px solid rgba(255,255,255,0.5);
+  text-decoration:none;
+}
+
+svg, #legend {
   cursor: none;
 }
 
@@ -31,7 +37,7 @@ svg {
 
 /* LEGEND **********************/
 
-#legend, #footnote {
+legend, #donations {
   background: rgba(10,10,10,0.95);
   padding: 10px;
   color: rgba(255,255,255,0.7);
@@ -46,18 +52,26 @@ svg {
   margin-top: 16px;
 }
 
-header {
+legend {
   display: inline-block;
   position: fixed;
   top: 10px;
   left: 10px;
 }
 
+#donations {
+  line-height: 2;
+  display: inline-block;
+  position: fixed;
+  top: 10px;
+  right: 10px;
+}
+
 #series {
   display: inline-block;
 }
 
-body.hide-legend #legend, body.hide-legend #footnote {
+body.hide-legend #legend, body.hide-legend #donations {
   display: none;
 }
 
