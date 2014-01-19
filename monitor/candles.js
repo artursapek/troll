@@ -18,6 +18,21 @@
 
   var candleMode = 'normal';
 
+  var $spinner = $('#spinner')
+    , spinnerFrame = 0
+    , spinnerFrames = ['|', '/', '-', '\\', '|', '/', '-', '\\']
+    ;
+
+  var spinnerInterval = setInterval(function () {
+    if (spinnerFrame === spinnerFrames.length - 1) {
+      spinnerFrame = 0;
+    } else {
+      spinnerFrame ++;
+    }
+    $spinner.text(spinnerFrames[spinnerFrame]);
+    console.log($spinner);
+  }, 200);
+
   function toggleCandleMode() {
     candleMode = {
       normal: 'heikinAshi'
@@ -396,7 +411,8 @@
     //$.getJSON(HOST + '/trades.json', markTrades);
 
     setTimeout(function () {
-      $('#loading').remove();
+      $('#loading, #spinner').remove();
+      clearInterval(spinnerInterval);
       window.scrollTo(ww * 2, 0)
     },0);
   }
