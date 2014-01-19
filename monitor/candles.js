@@ -10,45 +10,46 @@
   , y: 20
   }
 
-  var RSIShown = true;
+  var HOST = 'http://' + window.location.hostname + ':8001'
 
-  var svg, x, y;
-
-  var green = '#ffffff', red = '#c51c1c', span = '#56595d', crosshairYColor = '#1f2021', crosshairXColor = '#343637';
-
-  var candleMode = 'normal';
-
-  var $spinner = $('#spinner')
-    , spinnerFrame = 0
-    , spinnerFrames = ['|', '/', '-', '\\', '|', '/', '-', '\\']
+  var svg, x, y
+    , green = '#ffffff'
+    , red = '#c51c1c'
+    , span = '#56595d'
+    , crosshairYColor = '#1f2021'
+    , crosshairXColor = '#343637'
+    , RSIShown = true;
     ;
 
-  var spinnerInterval = setInterval(function () {
-    if (spinnerFrame === spinnerFrames.length - 1) {
-      spinnerFrame = 0;
-    } else {
-      spinnerFrame ++;
-    }
-    $spinner.text(spinnerFrames[spinnerFrame]);
-  }, 200);
+  var settings = {
+    'legend'      : true
+  , 'prices'      : true
+  , 'heikin-ashi' : false
+  , 'ichimoku'    : false
+  , 'ema-10'      : true
+  , 'ema-21'      : true
+  , 'sar'         : true
+  , 'keltner'     : true
+  , 'rsi'         : true
+  }
 
-  function toggleCandleMode() {
-    candleMode = {
-      normal: 'heikinAshi'
-    , heikinAshi: 'normal'
-    }[candleMode];
+  function storeSetting(key, setting) {
+    localStorage.setItem('setting-' + key, setting);
+  }
+
+  function getSetting(key) {
+    // lol:
+    return { 'false': false, 'true': true }[localStorage.getItem('setting-' + key)];
   }
 
   function Candle(c) {
-    switch (candleMode) {
-      case 'normal':
-        return c.CandleStick;
-      case 'heikinAshi':
-        return c.HeikinAshi
+    if (settings['heikin-ashi']) {
+      return c.HeikinAshi
+    } else {
+      return c.CandleStick;
     }
   }
 
-  var HOST = 'http://' + window.location.hostname + ':8001'
 
   function roundToFive(n) {
     var off = n % 5
@@ -359,6 +360,14 @@
 
     window.refresh = refresh;
 
+    Object.keys(settings).forEach(function (key) {
+      memorizedSetting = getSetting(key);
+      if (memorizedSetting !== undefined) {
+        settings[key] = memorizedSetting;
+      }
+      toggleSetting(key, settings[key]);
+    });
+
     $(document).mousemove(function (e) {
       var x = roundToFive(e.pageX);
       crosshairY.attr('x1', x + 1).attr('x2', x + 1)
@@ -414,6 +423,7 @@
       clearInterval(spinnerInterval);
       window.scrollTo(ww * 2, 0)
     },0);
+
   }
 
   function markTrades(trades) {
@@ -434,75 +444,78 @@
     hotkeys = {
       49: 'ema-10'
     , 50: 'ema-21'
-    , 67: 'chikou'
     , 69: 'keltner'
-    , 72: 'candle-style'
-    , 74: 'tenkan-kijun'
-    , 75: 'kumo'
+    , 72: 'heikin-ashi'
+    , 73: 'ichimoku'
     , 76: 'legend'
     , 80: 'prices'
     , 82: 'rsi'
     , 83: 'sar'
     }
-    toggle(hotkeys[e.which])
+
+    var key = hotkeys[e.which];
+    toggleSetting(key, !settings[key])
+    settings[key] = !settings[key]
   });
 
-  function toggle(name) {
+
+
+  function toggleSetting(key, setting) {
     var $body = $('body')
-    switch (name) {
+    storeSetting(key, setting);
+    switch (key) {
       case 'legend':
-        $body.toggleClass('hide-legend');
+        $body.toggleClass('hide-legend', !setting);
         break;
       case 'prices':
-        $body.toggleClass('hide-prices');
-        $('#hotkey-p').toggleClass('inactive');
+        $body.toggleClass('hide-prices', !setting);
+        $('#hotkey-p').toggleClass('inactive', !setting);
         break;
-      case 'candle-style':
-        toggleCandleMode();
-        $('#hotkey-h').toggleClass('inactive');
+      case 'heikin-ashi':
+        $('#hotkey-h').toggleClass('inactive', !setting);
         refresh();
         break;
       case 'ema-10':
-        $body.toggleClass('hide-ema-10');
-        $('#hotkey-1').toggleClass('inactive');
+        $body.toggleClass('hide-ema-10', !setting);
+        $('#hotkey-1').toggleClass('inactive', !setting);
         break;
       case 'ema-21': // 2
-        $body.toggleClass('hide-ema-21');
-        $('#hotkey-2').toggleClass('inactive');
-        break;
-      case 'kumo': // K
-        $body.toggleClass('hide-kumo');
-        $('#hotkey-k').toggleClass('inactive');
+        $body.toggleClass('hide-ema-21', !setting);
+        $('#hotkey-2').toggleClass('inactive', !setting);
         break;
       case 'sar': // S
-        $body.toggleClass('hide-sar');
-        $('#hotkey-s').toggleClass('inactive');
+        $body.toggleClass('hide-sar', !setting);
+        $('#hotkey-s').toggleClass('inactive', !setting);
         break;
-      case 'tenkan-kijun': // J
-        $body.toggleClass('hide-tenkan-kijun');
-        $('#hotkey-j').toggleClass('inactive');
+      case 'ichimoku': // I
+        $body.toggleClass('hide-ichimoku', !setting);
+        $('#hotkey-i').toggleClass('inactive', !setting);
         break;
       case 'keltner': // L
-        $body.toggleClass('hide-keltner');
-        $('#hotkey-e').toggleClass('inactive');
-        break;
-      case 'chikou': // C
-        $body.toggleClass('hide-chikou');
-        $('#hotkey-c').toggleClass('inactive');
+        $body.toggleClass('hide-keltner', !setting);
+        $('#hotkey-e').toggleClass('inactive', !setting);
         break;
       case 'rsi': // R
-        $('#hotkey-r').toggleClass('inactive');
+        $('#hotkey-r').toggleClass('inactive', !setting);
         RSIShown = !RSIShown
         refresh()
-        $body.toggleClass('hide-rsi');
+        $body.toggleClass('hide-rsi', !setting);
         break;
     }
   }
 
-  $(document).ready(function () {
-    toggle('tenkan-kijun');
-    toggle('chikou');
-    toggle('kumo');
-  });
+  var $spinner = $('#spinner')
+    , spinnerFrame = 0
+    , spinnerFrames = ['|', '/', '-', '\\', '|', '/', '-', '\\']
+    ;
+
+  var spinnerInterval = setInterval(function () {
+    if (spinnerFrame === spinnerFrames.length - 1) {
+      spinnerFrame = 0;
+    } else {
+      spinnerFrame ++;
+    }
+    $spinner.text(spinnerFrames[spinnerFrame]);
+  }, 200);
 
 }());

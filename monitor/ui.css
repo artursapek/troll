@@ -154,7 +154,7 @@ label {
   width: 14px;
   padding: 1px;
   text-align: center;
-  margin: 3px auto;
+  margin: 4px auto;
   color: black;
 }
 
@@ -163,8 +163,8 @@ label {
   color: white;
 }
 
-#hotkey-j {
-  margin: 16px auto;
+#hotkey-i {
+  margin: 32px auto;
 }
 
 
@@ -243,9 +243,12 @@ body.hide-rsi .rsi-guide {
   stroke: rgba(197,28,28,0.3);
 }
 
-body.hide-kumo .kumo,
-body.hide-kumo .senkou-span-a,
-body.hide-kumo .senkou-span-b {
+body.hide-ichimoku .kumo,
+body.hide-ichimoku .senkou-span-a,
+body.hide-ichimoku .senkou-span-b,
+body.hide-ichimoku .tenkan-sen,
+body.hide-ichimoku .kijun-sen,
+body.hide-ichimoku .chikou-span {
   display: none;
 }
 
@@ -257,19 +260,9 @@ body.hide-kumo .senkou-span-b {
   stroke: #6e3c7b;
 }
 
-body.hide-tenkan-kijun .tenkan-sen ,
-body.hide-tenkan-kijun .kijun-sen {
-  display: none;
-}
-
-body.hide-chikou .chikou-span {
-  display: none;
-}
-
 .chikou-span {
   stroke: #364d2d;
 }
-
 
 .ema-10 {
   stroke: #a3851d;
