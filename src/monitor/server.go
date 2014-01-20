@@ -35,9 +35,21 @@ func getIntervals() market.MarketIntervals {
   }
 }
 
+type IntervalsResponse struct {
+  Intervals market.MarketIntervals
+  PingIn int64
+}
+
 func intervalsHandler(rw http.ResponseWriter, req *http.Request) {
-  intervals := getIntervals()
-  body, err := json.Marshal(intervals)
+  now := time.Now().Unix()
+
+  response := IntervalsResponse{}
+  response.Intervals = getIntervals()
+  // Tell client to ping again when the next interval
+  // is ready, plus two minutes.
+  response.PingIn = market.INTERVAL_PERIOD - (now - response.Intervals[0].Time.Close) + 60 * 2
+
+  body, err := json.Marshal(response)
   if err != nil {
     panic(err)
   } else {

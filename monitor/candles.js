@@ -3,6 +3,7 @@
     , brushHeight = 80
     , h = innerHeight
     , hRSI = 100
+    , candles
     ;
 
   var padding = {
@@ -49,7 +50,6 @@
     }
   }
 
-
   function roundToFive(n) {
     var off = n % 5
     if (off <= 2) {
@@ -71,8 +71,8 @@
     $('#loading').text('server error. shit. sorry.');
   }
 
-  function drawCandles(candles) {
-    candles = candles.filter(function (c) {
+  function drawCandles(cs) {
+    candles = cs.Intervals.filter(function (c) {
       return c.CandleStick.Close > 0
     });
 
