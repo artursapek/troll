@@ -40,14 +40,18 @@ type IntervalsResponse struct {
   PingIn int64
 }
 
-func intervalsHandler(rw http.ResponseWriter, req *http.Request) {
+func pingIn(interval market.MarketInterval) int64 {
   now := time.Now().Unix()
+  return market.INTERVAL_PERIOD - (now - interval.Time.Close) + 60 * 2
+}
+
+func intervalsHandler(rw http.ResponseWriter, req *http.Request) {
 
   response := IntervalsResponse{}
   response.Intervals = getIntervals()
   // Tell client to ping again when the next interval
   // is ready, plus two minutes.
-  response.PingIn = market.INTERVAL_PERIOD - (now - response.Intervals[0].Time.Close) + 60 * 2
+  response.PingIn = pingIn(response.Intervals[0])
 
   body, err := json.Marshal(response)
   if err != nil {
@@ -57,6 +61,24 @@ func intervalsHandler(rw http.ResponseWriter, req *http.Request) {
     rw.Header().Set("Content-Type", "application/json")
     fmt.Fprintf(rw, string(body))
   }
+}
+
+func latestIntervalHandler(rw http.ResponseWriter, req *http.Request) {
+  latestInterval := market.LastInterval()
+
+  response := IntervalsResponse{}
+  response.Intervals = []market.MarketInterval{latestInterval}
+  response.PingIn = pingIn(latestInterval)
+
+  body, err := json.Marshal(response)
+  if err != nil {
+    panic(err)
+  } else {
+    rw.Header().Set("Access-Control-Allow-Origin", "*")
+    rw.Header().Set("Content-Type", "application/json")
+    fmt.Fprintf(rw, string(body))
+  }
+
 }
 
 func tradesHandler(rw http.ResponseWriter, req *http.Request) {
@@ -71,7 +93,8 @@ func tradesHandler(rw http.ResponseWriter, req *http.Request) {
 
 func StartServer() {
   getIntervals() // Cache them for the first time
-  http.HandleFunc("/prices.json", intervalsHandler)
+  http.HandleFunc("/intervals.json", intervalsHandler)
+  http.HandleFunc("/latest-interval.json", latestIntervalHandler)
   http.HandleFunc("/trades.json", tradesHandler)
   http.ListenAndServe(":8001", nil)
 }

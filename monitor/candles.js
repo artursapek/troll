@@ -62,7 +62,7 @@
   $.ajax({
     type: 'get',
     datatype: 'json',
-    url: HOST + '/prices.json',
+    url: HOST + '/intervals.json',
     success: drawCandles,
     error: error
   });
@@ -71,8 +71,8 @@
     $('#loading').text('server error. shit. sorry.');
   }
 
-  function drawCandles(cs) {
-    candles = cs.Intervals.filter(function (c) {
+  function drawCandles(response) {
+    candles = response.Intervals.filter(function (c) {
       return c.CandleStick.Close > 0
     });
 
@@ -423,6 +423,29 @@
       window.scrollTo(ww * 2, 0)
     },0);
 
+    setTimeout(getLatestInterval, response.PingIn);
+  }
+
+  function getLatestInterval() {
+    $.ajax({
+      type: 'get',
+      datatype: 'json',
+      url: HOST + '/latest-interval.json',
+      success: function (res) {
+        var interval = res.Intervals[0];
+        addCandleAndRefresh(interval);
+        // DO IT AGAIN! FOREVER. LETS WATCH THIS BABY ALL THE WAY TO DA MOON
+        // This is some of the worst JS I've ever written
+        if (res.PingIn > 0) {
+          setTimeout(getLatestInterval, res.PingIn)
+        }
+      }
+    });
+  }
+
+  function addCandleAndRefresh(candle) {
+    candles.push(candle);
+    refresh();
   }
 
   function markTrades(trades) {
@@ -456,8 +479,6 @@
     toggleSetting(key, !settings[key])
     settings[key] = !settings[key]
   });
-
-
 
   function toggleSetting(key, setting) {
     var $body = $('body')
