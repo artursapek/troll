@@ -423,7 +423,7 @@
       window.scrollTo(ww * 2, 0)
     },0);
 
-    setTimeout(getLatestInterval, response.PingIn);
+    setTimeout(getLatestInterval, response.PingIn * 1000);
   }
 
   function getLatestInterval() {
@@ -437,7 +437,7 @@
         // DO IT AGAIN! FOREVER. LETS WATCH THIS BABY ALL THE WAY TO DA MOON
         // This is some of the worst JS I've ever written
         if (res.PingIn > 0) {
-          setTimeout(getLatestInterval, res.PingIn)
+          setTimeout(getLatestInterval, res.PingIn * 1000)
         }
       }
     });
