@@ -73,7 +73,7 @@
 
   function drawCandles(response) {
     candles = response.Intervals.filter(function (c) {
-      return c.CandleStick.Close > 0
+      return c.CandleStick.Close > 0 && c.CandleStick.Open > 0
     });
 
     w = candles.length * 5
