@@ -66,6 +66,9 @@ func RebuildIntervals() {
       lastInterval.Time.Close = price.Time.Local
     }
 
+    fmt.Println(price.Time.Local)
+    fmt.Println(lastInterval.Time.Close)
+
     self.ProcessPrice(price)
   }
 }

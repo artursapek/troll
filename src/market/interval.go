@@ -108,10 +108,7 @@ func CountOfIntervalsBefore(interval MarketInterval) int {
 func LastInterval() MarketInterval {
   intervalUnpack := PastNIntervals(1)
   if len(intervalUnpack) == 0 {
-    closeTime := lastIntervalCloseTime()
-    mi := MarketInterval{}
-    mi.Time.Close = closeTime
-    return mi
+    return MarketInterval{}
   }
   return intervalUnpack[0]
 }
