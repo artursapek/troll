@@ -8,31 +8,31 @@ import (
   "encoding/json"
   "btce"
   "time"
+  "net/url"
+  "strconv"
+  "labix.org/v2/mgo/bson"
 )
 
 var cachedIntervals market.MarketIntervals
 var cacheExpiration int64
 
-func getIntervals() market.MarketIntervals {
+func getIntervals(after int64) market.MarketIntervals {
+  // Given closing time "after"
   now := time.Now().Unix()
 
   fmt.Println(now, cacheExpiration)
 
-  if now > cacheExpiration {
-    // Cache is invalid. Run the query again.
-    // Initially cacheExpiration will be 0,
-    // so this will always run the first time
-    var intervals market.MarketIntervals
-    var limit int = 12 * 30 * 3 // 3 mos
-    data.Intervals.Find(nil).Sort("-time.close").Limit(limit).All(&intervals)
-    cacheExpiration = intervals[0].Time.Close + 60 * 60 * 2 // Reset the expiration time
-    cachedIntervals = intervals
-    fmt.Println("Ran interval query")
+  // Cache is invalid. Run the query again.
+  // Initially cacheExpiration will be 0,
+  // so this will always run the first time
+  var intervals market.MarketIntervals
+  var limit int = 12 * 30 * 3 // 3 mos
+  data.Intervals.Find(bson.M{"time.close": bson.M{"$gt": after}}).Sort("-time.close").Limit(limit).All(&intervals)
+  if len(intervals) == 0 {
     return intervals
-  } else {
-    fmt.Println("Used cached intervals")
-    return cachedIntervals
   }
+  fmt.Println("Ran interval query")
+  return intervals
 }
 
 type IntervalsResponse struct {
@@ -46,12 +46,20 @@ func pingIn(interval market.MarketInterval) int64 {
 }
 
 func intervalsHandler(rw http.ResponseWriter, req *http.Request) {
+  query, _ := url.ParseQuery(req.URL.RawQuery)
+
+  after, _ := strconv.Atoi(query["after"][0])
 
   response := IntervalsResponse{}
-  response.Intervals = getIntervals()
+  response.Intervals = getIntervals(int64(after))
   // Tell client to ping again when the next interval
   // is ready, plus two minutes.
-  response.PingIn = pingIn(response.Intervals[0])
+  if len(response.Intervals) == 0 {
+    response.PingIn = market.INTERVAL_PERIOD
+  } else {
+    response.PingIn = pingIn(response.Intervals[0])
+  }
+
 
   body, err := json.Marshal(response)
   if err != nil {
@@ -92,7 +100,6 @@ func tradesHandler(rw http.ResponseWriter, req *http.Request) {
 }
 
 func StartServer() {
-  getIntervals() // Cache them for the first time
   http.HandleFunc("/intervals.json", intervalsHandler)
   http.HandleFunc("/latest-interval.json", latestIntervalHandler)
   http.HandleFunc("/trades.json", tradesHandler)

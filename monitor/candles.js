@@ -59,10 +59,19 @@
     }
   }
 
+  var cachedCandles = localStorage.getItem('candles')
+    , lastTime      = 0
+    ;
+
+  if (cachedCandles != null) {
+    cachedCandles = JSON.parse(cachedCandles);
+    lastTime = cachedCandles[0].Time.Close;
+  }
+
   $.ajax({
     type: 'get',
     datatype: 'json',
-    url: HOST + '/intervals.json',
+    url: HOST + '/intervals.json?after=' + lastTime,
     success: drawCandles,
     error: error
   });
@@ -72,9 +81,25 @@
   }
 
   function drawCandles(response) {
-    candles = response.Intervals.filter(function (c) {
-      return c.CandleStick.Close > 0 && c.CandleStick.Open > 0
-    });
+    var responseCandles = response.Intervals;
+    if (responseCandles !== null) {
+      responseCandles = responseCandles.filter(function (c) {
+        return c.CandleStick.Close > 0 && c.CandleStick.Open > 0
+      });
+    }
+
+    if (cachedCandles !== null) {
+      candles = cachedCandles;
+      if (responseCandles !== null) {
+        candles = candles.concat(responseCandles);
+      }
+    } else {
+      candles = responseCandles;
+    }
+
+    localStorage.setItem('candles', JSON.stringify(candles));
+    console.log(candles[0].Time.Close, candles[candles.length - 1].Time.Close)
+
 
     w = candles.length * 5
 
@@ -94,6 +119,8 @@
     }, 0);
 
     ww = w + 5
+
+    console.log(ww);
 
     svg = d3.select('body')
       .append('svg')
@@ -290,9 +317,7 @@
           .attr('fill', 'none')
           .attr('d', generator(cs))
       }
-
     }
-
 
     function orientCrosshairText(dir, x) {
       var offset = 10;
@@ -419,8 +444,8 @@
 
     setTimeout(function () {
       $('#loading, #spinner').remove();
+      window.scrollBy(ww * 2, 0);
       clearInterval(spinnerInterval);
-      window.scrollTo(ww * 2, 0)
     },0);
 
     setTimeout(getLatestInterval, response.PingIn * 1000);
