@@ -55,9 +55,10 @@ func intervalsHandler(rw http.ResponseWriter, req *http.Request) {
   // Tell client to ping again when the next interval
   // is ready, plus two minutes.
   if len(response.Intervals) == 0 {
-    response.PingIn = market.INTERVAL_PERIOD
+    response.PingIn = market.INTERVAL_PERIOD - (time.Now().Unix() - int64(after)) + 60 * 2
   } else {
     response.PingIn = pingIn(response.Intervals[0])
+
   }
 
 
