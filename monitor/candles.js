@@ -63,6 +63,9 @@
     , lastTime      = 0
     ;
 
+  // START DEFER
+  setTimeout(function() {
+
   if (cachedCandles != null) {
     cachedCandles = JSON.parse(cachedCandles);
     lastTime = cachedCandles[0].Time.Close;
@@ -450,6 +453,9 @@
 
     setTimeout(getLatestInterval, response.PingIn * 1000);
   }
+
+  // END DEFER
+  },1);
 
   function getLatestInterval() {
     $.ajax({
